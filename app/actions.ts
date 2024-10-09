@@ -15,7 +15,7 @@ export async function createProduct(prevState: unknown, formData: FormData) {
   const { getUser } = getKindeServerSession();
   const user = await getUser();
 
-  if (!user || user.email !== "jan@alenix.de") {
+  if (!user || user.email !== process.env.ADMIN_EMAIL) {
     return redirect("/");
   }
 
@@ -37,8 +37,11 @@ export async function createProduct(prevState: unknown, formData: FormData) {
       description: submission.value.description,
       status: submission.value.status,
       price: submission.value.price,
+      NewPrice: submission.value.newPrice,
+      quantity: submission.value.quantity,
+
       images: flattenUrls,
-      category: submission.value.category,
+      categoryId: submission.value.category,
       isFeatured: submission.value.isFeatured === true ? true : false,
     },
   });
@@ -50,7 +53,7 @@ export async function editProduct(prevState: any, formData: FormData) {
   const { getUser } = getKindeServerSession();
   const user = await getUser();
 
-  if (!user || user.email !== "jan@alenix.de") {
+  if (!user || user.email !== "lizadjebara49@gmail.com") {
     return redirect("/");
   }
 
@@ -74,39 +77,131 @@ export async function editProduct(prevState: any, formData: FormData) {
     data: {
       name: submission.value.name,
       description: submission.value.description,
-      category: submission.value.category,
+      categoryId: submission.value.category,
       price: submission.value.price,
+      NewPrice: submission.value.newPrice,
+      quantity: submission.value.quantity,
       isFeatured: submission.value.isFeatured === true ? true : false,
       status: submission.value.status,
       images: flattenUrls,
     },
   });
-
+  revalidatePath("/dashboard/products");
   redirect("/dashboard/products");
 }
 
-export async function deleteProduct(formData: FormData) {
+export async function editCategory(prevState: any, formData: FormData) {
   const { getUser } = getKindeServerSession();
   const user = await getUser();
 
-  if (!user || user.email !== "jan@alenix.de") {
+  if (!user || user.email !== process.env.ADMIN_EMAIL) {
+    return redirect("/");
+  }
+
+  const submission = parseWithZod(formData, {
+    schema: bannerSchema,
+  });
+
+  if (submission.status !== "success") {
+    return submission.reply();
+  }
+
+  const flattenUrls = submission.value.imageString;
+
+  const categoryId = formData.get("categoryId") as string;
+  await prisma.category.update({
+    where: {
+      id: categoryId,
+    },
+    data: {
+      name: submission.value.title,
+
+      imageString: flattenUrls,
+    },
+  });
+
+  redirect("/dashboard/categories");
+}
+
+export async function editBanner(prevState: any, formData: FormData) {
+  const { getUser } = getKindeServerSession();
+  const user = await getUser();
+
+  if (!user || user.email !== process.env.ADMIN_EMAIL) {
+    return redirect("/");
+  }
+
+  const submission = parseWithZod(formData, {
+    schema: bannerSchema,
+  });
+
+  if (submission.status !== "success") {
+    return submission.reply();
+  }
+
+  const flattenUrls = submission.value.imageString;
+
+  const bannerId = formData.get("bannerId") as string;
+  await prisma.banner.update({
+    where: {
+      id: bannerId,
+    },
+    data: {
+      title: submission.value.title,
+
+      imageString: flattenUrls,
+    },
+  });
+
+  redirect("/dashboard/banner");
+}
+export async function deleteProduct(productId: string) {
+  const { getUser } = getKindeServerSession();
+  const user = await getUser();
+
+  if (!user || user.email !== process.env.ADMIN_EMAIL) {
     return redirect("/");
   }
 
   await prisma.product.delete({
     where: {
-      id: formData.get("productId") as string,
+      id: productId,
     },
   });
 
-  redirect("/dashboard/products");
+  revalidatePath("/dashboard/products");
+  return { success: "Product Deleted!" };
 }
+export async function createCategory(prevState: any, formData: FormData) {
+  const { getUser } = getKindeServerSession();
+  const user = await getUser();
 
+  if (!user || user.email !== "lizadjebara49@gmail.com") {
+    return redirect("/");
+  }
+
+  const submission = parseWithZod(formData, {
+    schema: bannerSchema,
+  });
+
+  if (submission.status !== "success") {
+    return submission.reply();
+  }
+
+  await prisma.category.create({
+    data: {
+      name: submission.value.title,
+      imageString: submission.value.imageString,
+    },
+  });
+
+  redirect("/dashboard/categories");
+}
 export async function createBanner(prevState: any, formData: FormData) {
   const { getUser } = getKindeServerSession();
   const user = await getUser();
 
-  if (!user || user.email !== "jan@alenix.de") {
+  if (!user || user.email !== "lizadjebara49@gmail.com") {
     return redirect("/");
   }
 
@@ -128,21 +223,39 @@ export async function createBanner(prevState: any, formData: FormData) {
   redirect("/dashboard/banner");
 }
 
-export async function deleteBanner(formData: FormData) {
+export async function deleteBanner(bannerId: string) {
   const { getUser } = getKindeServerSession();
   const user = await getUser();
 
-  if (!user || user.email !== "jan@alenix.de") {
+  if (!user || user.email !== process.env.ADMIN_EMAIL) {
     return redirect("/");
   }
 
   await prisma.banner.delete({
     where: {
-      id: formData.get("bannerId") as string,
+      id: bannerId,
     },
   });
 
-  redirect("/dashboard/banner");
+  revalidatePath("/dashboard/banner");
+  return { success: "Banner Deleted!" };
+}
+export async function deleteCategory(categoryId: string) {
+  const { getUser } = getKindeServerSession();
+  const user = await getUser();
+
+  if (!user || user.email !== process.env.ADMIN_EMAIL) {
+    return redirect("/");
+  }
+
+  await prisma.category.delete({
+    where: {
+      id: categoryId,
+    },
+  });
+
+  revalidatePath("/dashboard/categories");
+  return { success: "Category Deleted!" };
 }
 
 export async function addItem(productId: string) {

@@ -1,6 +1,6 @@
 "use client";
 
-import { createBanner } from "@/app/actions";
+import { createCategory } from "@/app/actions";
 import { SubmitButton } from "@/app/components/SubmitButtons";
 import { UploadDropzone } from "@/app/lib/uplaodthing";
 import { bannerSchema } from "@/app/lib/zodSchemas";
@@ -23,9 +23,9 @@ import Link from "next/link";
 import { useState } from "react";
 import { useFormState } from "react-dom";
 
-export default function BannerRoute() {
+export default function CreateCategoryRoute() {
   const [image, setImages] = useState<string | undefined>(undefined);
-  const [lastResult, action] = useFormState(createBanner, undefined);
+  const [lastResult, action] = useFormState(createCategory, undefined);
 
   const [form, fields] = useForm({
     lastResult,
@@ -40,21 +40,21 @@ export default function BannerRoute() {
 
   return (
     <form id={form.id} onSubmit={form.onSubmit} action={action}>
-      <div className="flex items-center gap-x-4 md:p-6">
+      <div className="flex items-center gap-x-4  md:p-6">
         <Button variant="outline" size="icon" asChild>
-          <Link href="/dashboard/banner">
+          <Link href="/dashboard/categories">
             <ChevronLeft className="w-4 h-4" />
           </Link>
         </Button>
-        <h1 className="text-xl font-semibold tracking-tight">New Banner</h1>
+        <h1 className="text-xl font-semibold tracking-tight">New Category</h1>
       </div>
 
-      <Card className="mt-5 md:m-8">
+      <Card className="mt-5  md:m-8">
         <CardHeader>
-          <CardTitle>Banner Details</CardTitle>
-          <CardDescription>Create your banner right here</CardDescription>
+          <CardTitle>Category Details</CardTitle>
+          <CardDescription>Create your category right here</CardDescription>
         </CardHeader>
-        <CardContent className="">
+        <CardContent>
           <div className="flex flex-col gap-y-6">
             <div className="flex flex-col gap-3">
               <Label>Name</Label>
@@ -63,7 +63,7 @@ export default function BannerRoute() {
                 key={fields.title.key}
                 defaultValue={fields.title.initialValue}
                 type="text"
-                placeholder="Create title for Banner"
+                placeholder="Create title for the Category"
               />
               <p className="text-red-500">{fields.title.errors}</p>
             </div>
@@ -102,7 +102,7 @@ export default function BannerRoute() {
           </div>
         </CardContent>
         <CardFooter>
-          <SubmitButton text="Create Banner" />
+          <SubmitButton text="Create Category" />
         </CardFooter>
       </Card>
     </form>

@@ -14,6 +14,10 @@ const links = [
     href: "/dashboard/orders",
   },
   {
+    name: "Categories",
+    href: "/dashboard/categories",
+  },
+  {
     name: "Products",
     href: "/dashboard/products",
   },
@@ -32,12 +36,17 @@ export function DashboardNavigation() {
           key={link.href}
           href={link.href}
           className={cn(
-            link.href === pathname
-              ? "text-foreground"
-              : "text-muted-foreground hover:text-foreground"
+            "relative transition-all group p-2 font-[600] hover:text-primary",
+            pathname === link.href ? "text-primary" : ""
           )}
         >
           {link.name}
+          <span
+            className={cn(
+              "absolute left-2 bottom-[-2px] h-[3px] w-[0%] bg-primary transition-all duration-300  rounded-lg",
+              pathname === link.href ? "w-[30%]" : "w-[0%]"
+            )}
+          />
         </Link>
       ))}
     </>

@@ -1,5 +1,7 @@
 "use client";
 
+import { createProduct } from "@/app/actions";
+import { UploadDropzone } from "@/app/lib/uplaodthing";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -18,47 +20,24 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { ChevronLeft, XIcon } from "lucide-react";
 import Link from "next/link";
-import { SubmitButton } from "../SubmitButtons";
-import { Switch } from "@/components/ui/switch";
-import Image from "next/image";
-import { UploadDropzone } from "@/app/lib/uplaodthing";
-import { categories } from "@/app/lib/categories";
-import { useState } from "react";
 import { useFormState } from "react-dom";
-import { createProduct, editProduct } from "@/app/actions";
 import { useForm } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
 import { productSchema } from "@/app/lib/zodSchemas";
-import { type $Enums } from "@prisma/client";
-import { CatgoriesT } from "@/app/dashboard/products/create/page";
+import { useState } from "react";
 
-interface iAppProps {
-  id: string;
-  name: string;
-  description: string;
-  status: $Enums.ProductStatus;
-  quantity: number;
-  price: number;
-  NewPrice: number | null;
+import Image from "next/image";
 
-  images: string[];
-  Category: {
-    id: string;
-    name: string;
-  } | null;
-  isFeatured: boolean;
-}
-interface editFormProps {
-  data: iAppProps;
-  categories: CatgoriesT;
-}
+import { SubmitButton } from "@/app/components/SubmitButtons";
+import { CatgoriesT } from "./page";
 
-export function EditForm({ data, categories }: editFormProps) {
-  const [images, setImages] = useState<string[]>(data.images);
-  const [lastResult, action] = useFormState(editProduct, undefined);
+export default function ProductCreateRoute({ props }: { props: CatgoriesT }) {
+  const [images, setImages] = useState<string[]>([]);
+  const [lastResult, action] = useFormState(createProduct, undefined);
   const [form, fields] = useForm({
     lastResult,
 
@@ -73,23 +52,23 @@ export function EditForm({ data, categories }: editFormProps) {
   const handleDelete = (index: number) => {
     setImages(images.filter((_, i) => i !== index));
   };
+
   return (
     <form id={form.id} onSubmit={form.onSubmit} action={action}>
-      <input type="hidden" name="productId" value={data.id} />
-      <div className="flex items-center gap-4 md:p-6">
+      <div className="flex items-center gap-4 md:p-6 ">
         <Button variant="outline" size="icon" asChild>
           <Link href="/dashboard/products">
             <ChevronLeft className="w-4 h-4" />
           </Link>
         </Button>
-        <h1 className="text-xl font-semibold tracking-tight">Edit Product</h1>
+        <h1 className="text-xl font-semibold tracking-tight">New Product</h1>
       </div>
 
       <Card className="mt-5 md:my-6 w-[80%] mx-auto">
         <CardHeader>
           <CardTitle>Product Details</CardTitle>
           <CardDescription>
-            In this form you can update your product
+            In this form you can create your product
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -100,7 +79,7 @@ export function EditForm({ data, categories }: editFormProps) {
                 type="text"
                 key={fields.name.key}
                 name={fields.name.name}
-                defaultValue={data.name}
+                defaultValue={fields.name.initialValue}
                 className="w-full"
                 placeholder="Product Name"
               />
@@ -113,18 +92,18 @@ export function EditForm({ data, categories }: editFormProps) {
               <Textarea
                 key={fields.description.key}
                 name={fields.description.name}
-                defaultValue={data.description}
+                defaultValue={fields.description.initialValue}
                 placeholder="Write your description right here..."
               />
               <p className="text-red-500">{fields.description.errors}</p>
             </div>
-            <div className="flex justify-around items-center w-full gap-x-3 ">
+            <div className="flex justify-around items-center w-full gap-x-3">
               <div className="flex flex-col gap-3 w-[45%]">
                 <Label>Price</Label>
                 <Input
                   key={fields.price.key}
                   name={fields.price.name}
-                  defaultValue={data.price}
+                  defaultValue={fields.price.initialValue}
                   type="number"
                   placeholder="$55"
                 />
@@ -135,7 +114,7 @@ export function EditForm({ data, categories }: editFormProps) {
                 <Input
                   key={fields.quantity.key}
                   name={fields.quantity.name}
-                  defaultValue={data.quantity}
+                  defaultValue={fields.quantity.initialValue}
                   type="number"
                   placeholder="$55"
                 />
@@ -148,18 +127,18 @@ export function EditForm({ data, categories }: editFormProps) {
                 <Switch
                   key={fields.isFeatured.key}
                   name={fields.isFeatured.name}
-                  defaultChecked={data.isFeatured}
+                  defaultValue={fields.isFeatured.initialValue}
                 />
                 <p className="text-red-500">{fields.isFeatured.errors}</p>
               </div>
               <div className="flex flex-col gap-3 w-[45%]">
-                <Label>New Price</Label>
+                <Label>Is your product in promotion? Set the new price</Label>
                 <Input
                   key={fields.newPrice.key}
                   name={fields.newPrice.name}
-                  defaultValue={data.NewPrice || ""}
+                  defaultValue={fields.newPrice.initialValue}
                   type="number"
-                  placeholder="$55"
+                  placeholder="1"
                 />
                 <p className="text-red-500">{fields.newPrice.errors}</p>
               </div>
@@ -170,13 +149,12 @@ export function EditForm({ data, categories }: editFormProps) {
                 <Select
                   key={fields.status.key}
                   name={fields.status.name}
-                  defaultValue={data.status}
+                  defaultValue={fields.status.initialValue}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select Status" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="draft">Draft</SelectItem>
                     <SelectItem value="published">Published</SelectItem>
                     <SelectItem value="archived">Archived</SelectItem>
                   </SelectContent>
@@ -189,13 +167,13 @@ export function EditForm({ data, categories }: editFormProps) {
                 <Select
                   key={fields.category.key}
                   name={fields.category.name}
-                  defaultValue={data.Category?.id}
+                  defaultValue={fields.category.initialValue}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select Category" />
                   </SelectTrigger>
                   <SelectContent>
-                    {categories.map((category) => (
+                    {props.map((category) => (
                       <SelectItem key={category.id} value={category.id}>
                         {category.name}
                       </SelectItem>
@@ -205,7 +183,7 @@ export function EditForm({ data, categories }: editFormProps) {
                 <p className="text-red-500">{fields.category.errors}</p>
               </div>
             </div>
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-3 ">
               <Label>Images</Label>
               <input
                 type="hidden"
@@ -227,7 +205,8 @@ export function EditForm({ data, categories }: editFormProps) {
                       />
 
                       <button
-                        title="update"
+                        name="create"
+                        title="create"
                         onClick={() => handleDelete(index)}
                         type="button"
                         className="absolute -top-3 -right-3 bg-red-500 p-2 rounded-lg text-white"
@@ -254,7 +233,7 @@ export function EditForm({ data, categories }: editFormProps) {
           </div>
         </CardContent>
         <CardFooter>
-          <SubmitButton text="Edit Product" />
+          <SubmitButton text="Create Product" />
         </CardFooter>
       </Card>
     </form>

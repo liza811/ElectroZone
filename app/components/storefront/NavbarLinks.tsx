@@ -15,21 +15,6 @@ export const navbarLinks = [
     name: "All Products",
     href: "/products/all",
   },
-  {
-    id: 2,
-    name: "Men",
-    href: "/products/men",
-  },
-  {
-    id: 3,
-    name: "Women",
-    href: "/products/women",
-  },
-  {
-    id: 4,
-    name: "Kids",
-    href: "/products/kids",
-  },
 ];
 
 export function NavbarLinks() {
@@ -41,13 +26,17 @@ export function NavbarLinks() {
           href={item.href}
           key={item.id}
           className={cn(
-            location === item.href
-              ? "bg-muted"
-              : "hover:bg-muted hover:bg-opacity-75",
-            "group p-2 font-medium rounded-md"
+            "relative transition-all group p-2 font-[600] hover:text-primary",
+            location === item.href ? "text-primary" : ""
           )}
         >
           {item.name}
+          <span
+            className={cn(
+              "absolute left-2 bottom-[-2px] h-[3px] w-[0%] bg-primary transition-all duration-300  rounded-lg",
+              location === item.href ? "w-[30%]" : "w-[0%]"
+            )}
+          />
         </Link>
       ))}
     </div>

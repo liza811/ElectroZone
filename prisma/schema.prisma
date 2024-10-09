@@ -31,11 +31,15 @@ model Product {
   description String
   status      ProductStatus
   price       Int
+  NewPrice      Int? 
+  quantity Int @default(1)
   images      String[]
-  category    Category
-  isFeatured  Boolean       @default(false)
 
-  createdAt DateTime @default(now())
+  isFeatured Boolean @default(false)
+
+  createdAt  DateTime  @default(now())
+  Category   Category? @relation(fields: [categoryId], references: [id])
+  categoryId String?
 }
 
 model Banner {
@@ -63,8 +67,9 @@ enum ProductStatus {
   archived
 }
 
-enum Category {
-  men
-  women
-  kids
+model Category {
+  id       String    @id @default(uuid())
+   imageString String
+   name     String
+  products Product[]
 }

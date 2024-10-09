@@ -25,12 +25,12 @@ export default async function DashboardLayout({
   const { getUser } = getKindeServerSession();
   const user = await getUser();
 
-  if (!user || user.email !== "jan@alenix.de") {
+  if (!user || user.email !== "lizadjebara49@gmail.com") {
     return redirect("/");
   }
   return (
-    <div className="flex w-full flex-col max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <header className="sticky top-0 flex h-16 items-center justify-between gap-4 border-b bg-white">
+    <div className="flex w-full flex-col  bg-[#e3e6f3]/40 ">
+      <header className=" z-50  fixed h-[80px] flex w-full items-center justify-between  px-4 sm:px-6 lg:px-8 gap-4 border-b bg-[#e3e6f3] shadow-lg ">
         <nav className="hidden font-medium md:flex md:flex-row md:items-center md:gap-5 md:text-sm lg:gap-6">
           <DashboardNavigation />
         </nav>
@@ -67,7 +67,9 @@ export default async function DashboardLayout({
           </DropdownMenuContent>
         </DropdownMenu>
       </header>
-      <main className="my-5">{children}</main>
+      <main className="  px-4 sm:px-6 lg:px-8 pt-[80px] h-full bg-main">
+        {children}
+      </main>
     </div>
   );
 }

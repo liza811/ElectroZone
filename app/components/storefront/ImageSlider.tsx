@@ -31,21 +31,36 @@ export function ImageSlider({ images }: iAppProps) {
 
   return (
     <div className="grid gap-6 md:gap-3 items-start">
-      <div className="relative overflow-hidden rounded-lg">
+      <div className="relative overflow-hidden rounded-lg max-w-[500px] mx-auto">
         <Image
           width={600}
           height={600}
           src={images[mainImageIndex]}
           alt="Product image"
-          className="object-cover w-[600px] h-[600px]"
+          className="object-contain w-full h-auto max-w-[400px] max-h-[400px] sm:max-w-[450px] sm:max-h-[450px] "
         />
-
-        <div className="absolute inset-0 flex items-center justify-between px-4">
-          <Button onClick={handlePreviousClick} variant="ghost" size="icon">
-            <ChevronLeft className="w-6 h-6" />
+        <div className="absolute inset-0 flex items-center justify-between ">
+          <Button
+            onClick={handlePreviousClick}
+            variant="ghost"
+            size="icon"
+            className={cn(
+              "-ml-1 hover:bg-transparent block",
+              mainImageIndex === 0 && "hidden"
+            )}
+          >
+            <ChevronLeft className="w-6 h-6 " />
           </Button>
-          <Button onClick={handleNextClick} variant="ghost" size="icon">
-            <ChevronRight className="w-6 h-6" />
+          <Button
+            onClick={handleNextClick}
+            variant="ghost"
+            size="icon"
+            className={cn(
+              "ml-auto pl-4 hover:bg-transparent block",
+              mainImageIndex === images.length - 1 && "hidden"
+            )}
+          >
+            <ChevronRight className="w-6 h-6 " />
           </Button>
         </div>
       </div>
@@ -54,6 +69,7 @@ export function ImageSlider({ images }: iAppProps) {
         {images.map((image, index) => (
           <div
             className={cn(
+              "p-0 w-[100px] h-[100px]",
               index === mainImageIndex
                 ? "border-2 border-primary"
                 : "border border-gray-200",

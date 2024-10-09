@@ -10,32 +10,48 @@ import {
 } from "@kinde-oss/kinde-auth-nextjs/components";
 import { redis } from "@/app/lib/redis";
 import { Cart } from "@/app/lib/interfaces";
+import { CategoriesNavigation } from "./categories-navigation";
+import { cn } from "@/lib/utils";
 
 export async function Navbar() {
   const { getUser } = getKindeServerSession();
   const user = await getUser();
+  const isAdmin = user?.email === process.env.ADMIN_EMAIL;
 
   const cart: Cart | null = await redis.get(`cart-${user?.id}`);
-
   const total = cart?.items.reduce((sum, item) => sum + item.quantity, 0) || 0;
 
   return (
-    <nav className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex items-center justify-between">
+    <nav className="w-full h-[80px] top-0 z-50  fixed px-4 sm:px-6 lg:px-8 py-5 flex items-center justify-between  shadow-lg  bg-[#e3e6f3] ">
       <div className="flex items-center">
         <Link href="/">
           <h1 className="text-black font-bold text-xl lg:text-3xl">
-            Shoe<span className="text-primary">Marshal</span>
+            Electro<span className="text-primary">Zone</span>
           </h1>
         </Link>
         <NavbarLinks />
+        <CategoriesNavigation />
       </div>
 
-      <div className="flex items-center">
+      <div className="flex items-center text-gray-700 gap-x-2">
+        {isAdmin && (
+          <Link
+            href={`/dashboard`}
+            className={cn(
+              "relative transition-all group p-2 font-[600] hover:text-primary"
+            )}
+          >
+            Dashboard
+          </Link>
+        )}
         {user ? (
           <>
-            <Link href="/bag" className="group p-2 flex items-center mr-2">
-              <ShoppingBagIcon className="h-6 w-6 text-gray-400 group-hover:text-gray-500" />
-              <span className="ml-2 text-sm font-medium text-gray-700 group-hover:text-gray-800">
+            <Link
+              href="/bag"
+              className="group p-2 flex items-center mr-2 text-gray-700 relative"
+            >
+              <ShoppingBagIcon className="h-6 w-6  group-hover:text-gray-500" />
+              <span className="left-8 text-sm font-medium absolute text-gray-800 group-hover:text-gray-800 -top-1  ">
                 {total}
               </span>
             </Link>
@@ -44,7 +60,7 @@ export async function Navbar() {
               email={user.email as string}
               name={user.given_name as string}
               userImage={
-                user.picture ?? `https://avatar.vercel.sh/${user.given_name}`
+                user.picture ?? `https://avatar.vercel. /${user.given_name}`
               }
             />
           </>
