@@ -26,7 +26,7 @@ export async function Hero() {
       <CarouselContent>
         {data.map((item) => (
           <CarouselItem key={item.id}>
-            <div className="relative h-[45vh] lg:h-[58vh] w-[90%] mt-6 mx-auto">
+            <div className="relative h-[45vh] lg:h-[58vh] md:w-[90%] w-[95%] mt-6 mx-auto">
               <Image
                 alt="Banner Image"
                 src={item.imageString}
