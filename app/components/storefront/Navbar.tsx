@@ -12,6 +12,7 @@ import { redis } from "@/app/lib/redis";
 import { Cart } from "@/app/lib/interfaces";
 import { CategoriesNavigation } from "./categories-navigation";
 import { cn } from "@/lib/utils";
+import { MobileNav } from "./mobile-navigation";
 
 export async function Navbar() {
   const { getUser } = getKindeServerSession();
@@ -33,7 +34,7 @@ export async function Navbar() {
         <CategoriesNavigation />
       </div>
 
-      <div className="flex items-center text-gray-700 gap-x-2">
+      <div className=" items-center text-gray-700 gap-x-2 hidden md:flex">
         {isAdmin && (
           <Link
             href={`/dashboard`}
@@ -59,23 +60,24 @@ export async function Navbar() {
             <UserDropdown
               email={user.email as string}
               name={user.given_name as string}
-              userImage={
-                user.picture ?? `https://avatar.vercel. /${user.given_name}`
-              }
+              userImage={user.picture}
             />
           </>
         ) : (
           <div className="hidden md:flex md:flex-1 md:items-center md:justify-end md:space-x-2">
             <Button variant="ghost" asChild>
-              <LoginLink>Sign in</LoginLink>
+              <LoginLink className="hover:bg-slate-300/50">Sign in</LoginLink>
             </Button>
             <span className="h-6 w-px bg-gray-200"></span>
             <Button variant="ghost" asChild>
-              <RegisterLink>Create Account</RegisterLink>
+              <RegisterLink className="hover:bg-slate-300/50">
+                Create Account
+              </RegisterLink>
             </Button>
           </div>
         )}
       </div>
+      <MobileNav user={user ? true : false} isAdmin={isAdmin} total={total} />
     </nav>
   );
 }
