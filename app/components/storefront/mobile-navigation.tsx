@@ -41,6 +41,7 @@ export const MobileNav = ({
         <div className="flex flex-col md:hidden  ">
           {navbarLinks.map((item) => (
             <Link
+              onClick={() => setIsOpen(!isOpen)}
               href={item.href}
               key={item.id}
               className={cn(
@@ -55,6 +56,7 @@ export const MobileNav = ({
         <div className=" items-center text-gray-700 gap-x-2 -mt-5">
           {isAdmin && (
             <Link
+              onClick={() => setIsOpen(!isOpen)}
               href={`/dashboard`}
               className={cn(
                 " transition-all group -mt-3 font-[600] hover:text-primary"
@@ -66,6 +68,7 @@ export const MobileNav = ({
           {user ? (
             <>
               <Link
+                onClick={() => setIsOpen(!isOpen)}
                 href="/bag"
                 className=" p-2 flex items-center mt-3 text-gray-700 "
               >
@@ -83,6 +86,7 @@ export const MobileNav = ({
           ) : (
             <div className=" flex flex-col  space-x-2 text-start">
               <Button
+                onClick={() => setIsOpen(!isOpen)}
                 variant="ghost"
                 asChild
                 className="hover:bg-transparent text-[15px]  font-[600] hover:text-primary flex justify-start text-black"
@@ -93,6 +97,7 @@ export const MobileNav = ({
               </Button>
 
               <Button
+                onClick={() => setIsOpen(!isOpen)}
                 variant="ghost"
                 asChild
                 className="hover:bg-transparent text-[15px]  font-[600] hover:text-primary flex justify-start text-black"
