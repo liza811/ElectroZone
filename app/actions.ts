@@ -379,11 +379,11 @@ export async function checkOut() {
       line_items: lineItems,
       success_url:
         process.env.NODE_ENV === "development"
-          ? "http://localhost:3000/payment/success"
+          ? `${process.env.KINDE_SITE_URL}/payment/success`
           : "https://shoe-marshal.vercel.app/payment/success",
       cancel_url:
         process.env.NODE_ENV === "development"
-          ? "http://localhost:3000/payment/cancel"
+          ? `${process.env.KINDE_SITE_URL}/payment/cancel`
           : "https://shoe-marshal.vercel.app/payment/cancel",
       metadata: {
         userId: user.id,
