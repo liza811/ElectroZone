@@ -17,7 +17,7 @@ export default async function BagRoute() {
   const user = await getUser();
 
   if (!user) {
-    redirect("/");
+    redirect("/api/auth/creation");
   }
 
   const cart: Cart | null = await redis.get(`cart-${user.id}`);
