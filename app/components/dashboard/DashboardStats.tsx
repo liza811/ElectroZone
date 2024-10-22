@@ -1,6 +1,6 @@
 import prisma from "@/app/lib/db";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { DollarSign, PartyPopper, ShoppingBag, User2 } from "lucide-react";
+import { DollarSign, PartyPopper, ShoppingBag, UserIcon } from "lucide-react";
 
 async function getData() {
   const [user, products, order] = await Promise.all([
@@ -41,7 +41,9 @@ export async function DashboardStats() {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between pb-2">
           <CardTitle>Total Revenue</CardTitle>
-          <DollarSign className="h-4 w-4 text-green-500" />
+          <span className="w-fit h-fit rounded-full p-3 bg-green-500/10">
+            <DollarSign className="size-7 text-green-500" />
+          </span>
         </CardHeader>
         <CardContent>
           <p className="text-2xl font-bold">
@@ -53,19 +55,23 @@ export async function DashboardStats() {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between pb-2">
           <CardTitle>Total Sales</CardTitle>
-          <ShoppingBag className="h-4 w-4 text-blue-500" />
+          <span className="w-fit h-fit rounded-full p-3 bg-blue-500/10">
+            <ShoppingBag className="size-7 text-blue-500" />
+          </span>
         </CardHeader>
         <CardContent>
           <p className="text-2xl font-bold">+{order.length}</p>
           <p className="text-xs text-muted-foreground">
-            Total Sales on ShoeMarshal
+            Total Sales on Awramart
           </p>
         </CardContent>
       </Card>
       <Card>
         <CardHeader className="flex flex-row items-center justify-between pb-2">
           <CardTitle>Total Products</CardTitle>
-          <PartyPopper className="h-4 w-4 text-indigo-500" />
+          <span className="w-fit h-fit rounded-full p-3 bg-red-500/10">
+            <PartyPopper className="size-7 text-red-500" />
+          </span>
         </CardHeader>
         <CardContent>
           <p className="text-2xl font-bold">{products.length}</p>
@@ -77,7 +83,9 @@ export async function DashboardStats() {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between pb-2">
           <CardTitle>Total Users</CardTitle>
-          <User2 className="h-4 w-4 text-orange-500" />
+          <span className="w-fit h-fit rounded-full p-3 bg-orange-500/10">
+            <UserIcon className="size-7 text-orange-500" />
+          </span>
         </CardHeader>
         <CardContent>
           <p className="text-2xl font-bold">{user.length}</p>

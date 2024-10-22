@@ -20,9 +20,9 @@ async function getData() {
           quantity: true,
           id: true,
         },
+        take: 8,
       },
     },
-    take: 4,
   });
 
   return data;

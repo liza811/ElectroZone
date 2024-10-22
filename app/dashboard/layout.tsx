@@ -2,7 +2,7 @@ import { ReactNode } from "react";
 import { DashboardNavigation } from "../components/dashboard/DasboardNavigation";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { CircleUser, MenuIcon } from "lucide-react";
+import { CircleUser, LogOutIcon, MenuIcon } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -25,7 +25,7 @@ export default async function DashboardLayout({
   const { getUser } = getKindeServerSession();
   const user = await getUser();
 
-  if (!user || user.email !== "lizadjebara49@gmail.com") {
+  if (!user || user.email !== process.env.ADMIN_EMAIL) {
     return redirect("/");
   }
   return (
@@ -38,7 +38,7 @@ export default async function DashboardLayout({
         <Sheet>
           <SheetTrigger asChild>
             <Button
-              className="shrink-0 md:hidden"
+              className="shrink-0 md:hidden bg-transparent"
               variant="outline"
               size="icon"
             >
@@ -58,11 +58,25 @@ export default async function DashboardLayout({
               <CircleUser className="w-5 h-5" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>My Account</DropdownMenuLabel>
+          <DropdownMenuContent
+            className="w-56 bg-neutral-50"
+            align="end"
+            forceMount
+          >
+            <DropdownMenuLabel className="flex flex-col space-y-1">
+              <p className="text-sm font-medium leading-none">
+                {user.given_name}
+              </p>
+              <p className="text-xs leading-none text-muted-foreground">
+                {user.email}
+              </p>
+            </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
-              <LogoutLink>Logout</LogoutLink>
+              <LogoutLink className="flex gap-x-2 items-center">
+                <LogOutIcon className="size-4 text-slate-500 " />
+                Log out
+              </LogoutLink>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

@@ -12,17 +12,21 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
-
+enum Role {
+  USER
+  ADMIN
+}
 model User {
-  id           String @id @unique
-  email        String
+  id           String @id @default(uuid())
+  email        String @unique
   firstName    String
   lastName     String
-  profileImage String
-
+  profileImage String?
+role      Role     @default(USER)
   orders Order[]
 
   createdAt DateTime @default(now())
+    cart  Cart?
 }
 
 model Product {
@@ -31,8 +35,8 @@ model Product {
   description String
   status      ProductStatus
   price       Int
-  NewPrice      Int? 
-  quantity Int @default(1)
+  NewPrice    Int?
+  quantity    Int           @default(1)
   images      String[]
 
   isFeatured Boolean @default(false)
@@ -40,6 +44,12 @@ model Product {
   createdAt  DateTime  @default(now())
   Category   Category? @relation(fields: [categoryId], references: [id])
   categoryId String?
+   
+
+
+  OrderItem OrderItem[]
+
+  CartItem CartItem[]
 }
 
 model Banner {
@@ -57,10 +67,30 @@ model Order {
 
   User   User?   @relation(fields: [userId], references: [id])
   userId String?
+ guestEmail String?  
+  guestName  String?  
+  guestPhone String?
+   billingAddressLine1  String?
+  billingAddressLine2  String?
+  billingCity          String?
 
+  billingPostalCode    String?
+  billingCountry       String?
   createdAt DateTime @default(now())
+    orderItems  OrderItem[]
 }
 
+
+model OrderItem {
+  id        Int      @id @default(autoincrement())
+  orderId   String   
+  productId String      
+  quantity  Int     
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  order     Order    @relation(fields: [orderId], references: [id])
+  product   Product  @relation(fields: [productId], references: [id])
+}
 enum ProductStatus {
   draft
   published
@@ -68,8 +98,29 @@ enum ProductStatus {
 }
 
 model Category {
-  id       String    @id @default(uuid())
-   imageString String
-   name     String
-  products Product[]
+  id          String    @id @default(uuid())
+  imageString String
+  name        String
+  products    Product[]
+}
+
+
+model Cart {
+  id          Int      @id @default(autoincrement())
+  userId      String?     @unique
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  items       CartItem[]  
+  user        User?    @relation(fields: [userId], references: [id])
+}
+
+model CartItem {
+  id          Int      @id @default(autoincrement())
+  cartId      Int   
+  productId   String      
+  quantity    Int     
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  cart        Cart     @relation(fields: [cartId], references: [id], onDelete: Cascade) 
+  product     Product  @relation(fields: [productId], references: [id])
 }

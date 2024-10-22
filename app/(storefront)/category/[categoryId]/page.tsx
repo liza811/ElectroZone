@@ -17,7 +17,7 @@ const CatgoryPage = async ({ params }: { params: { categoryId: string } }) => {
 
   return (
     <main className="w-full h-full mt-6 flex flex-col gap-y-5">
-      <div className="relative aspect-[4/3] rounded-md overflow-hidden bg-gray-100 w-full  min-h-[50vh]">
+      <div className="relative aspect-[4/3] rounded-md overflow-hidden bg-gray-100 w-full h-[35vh]  md:min-h-[50vh]">
         {/* Category Image */}
         <Image
           src={products?.imageString || ""}

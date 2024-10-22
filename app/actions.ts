@@ -5,11 +5,19 @@ import { redirect } from "next/navigation";
 import { parseWithZod } from "@conform-to/zod";
 import { bannerSchema, productSchema } from "./lib/zodSchemas";
 import prisma from "./lib/db";
-import { redis } from "./lib/redis";
-import { Cart } from "./lib/interfaces";
+
 import { revalidatePath } from "next/cache";
 import { stripe } from "./lib/stripe";
 import Stripe from "stripe";
+import { Cart, GuestCart } from "./lib/interfaces";
+import { cookies } from "next/headers";
+import {
+  deleteGuestCartItem,
+  getCart,
+  getGuestCartt,
+  getProductsFromGuestCart,
+  saveGuestCart,
+} from "@/lib/cart";
 
 export async function createProduct(prevState: unknown, formData: FormData) {
   const { getUser } = getKindeServerSession();
@@ -258,72 +266,100 @@ export async function deleteCategory(categoryId: string) {
   return { success: "Category Deleted!" };
 }
 
-export async function addItem(productId: string) {
+export async function addItemToGuestCart(productId: string, quantity: number) {
+  // Get the existing cart from cookies
+  const cart = getGuestCartt();
+
+  // Check if the product already exists in the cart
+  const existingCartItem = cart.items.find(
+    (item: any) => item.productId === productId
+  );
+
+  if (existingCartItem) {
+    // If the item exists, update the quantity
+    existingCartItem.quantity += quantity;
+  } else {
+    // Otherwise, add new item to cart
+    cart.items.push({ productId, quantity });
+  }
+
+  // Save the updated cart back to cookies
+  saveGuestCart(cart);
+
+  return { message: "Item added to cart", cart };
+}
+export async function addItem(productId: string, quantity: number) {
   const { getUser } = getKindeServerSession();
   const user = await getUser();
 
   if (!user) {
-    return redirect("/");
+    const cart = await addItemToGuestCart(productId, quantity);
+
+    return cart.cart;
   }
 
-  let cart: Cart | null = await redis.get(`cart-${user.id}`);
-
-  const selectedProduct = await prisma.product.findUnique({
-    select: {
-      id: true,
-      name: true,
-      price: true,
-      images: true,
-    },
-    where: {
-      id: productId,
-    },
-  });
-
-  if (!selectedProduct) {
-    throw new Error("No product with this id");
-  }
-  let myCart = {} as Cart;
-
-  if (!cart || !cart.items) {
-    myCart = {
-      userId: user.id,
-      items: [
-        {
-          price: selectedProduct.price,
-          id: selectedProduct.id,
-          imageString: selectedProduct.images[0],
-          name: selectedProduct.name,
-          quantity: 1,
-        },
-      ],
-    };
-  } else {
-    let itemFound = false;
-
-    myCart.items = cart.items.map((item) => {
-      if (item.id === productId) {
-        itemFound = true;
-        item.quantity += 1;
-      }
-
-      return item;
+  try {
+    // Check if the user has a cart
+    let cart = await prisma.cart.findUnique({
+      where: {
+        userId: user.id,
+      },
+      include: {
+        items: true,
+      },
     });
 
-    if (!itemFound) {
-      myCart.items.push({
-        id: selectedProduct.id,
-        imageString: selectedProduct.images[0],
-        name: selectedProduct.name,
-        price: selectedProduct.price,
-        quantity: 1,
+    // If no cart exists, create one
+    if (!cart) {
+      cart = await prisma.cart.create({
+        data: {
+          userId: user.id,
+          items: {
+            create: {
+              productId: productId,
+              quantity: quantity,
+            },
+          },
+        },
+        include: {
+          items: true,
+        },
       });
+      return { message: "Item added to cart.", cart };
     }
+
+    // Check if the product already exists in the cart
+    const existingCartItem = cart.items.find(
+      (item) => item.productId === productId
+    );
+
+    if (existingCartItem) {
+      // Update the quantity if it already exists
+      const updatedCartItem = await prisma.cartItem.update({
+        where: {
+          id: existingCartItem.id,
+        },
+        data: {
+          quantity: existingCartItem.quantity + quantity,
+        },
+      });
+      return { message: "Cart item updated.", updatedCartItem };
+    } else {
+      // If the product doesn't exist, add it to the cart
+      const newCartItem = await prisma.cartItem.create({
+        data: {
+          cartId: cart.id,
+          productId: productId,
+          quantity: quantity,
+        },
+      });
+      revalidatePath("/");
+      revalidatePath("/", "layout");
+      return { message: "Item added to cart.", newCartItem };
+    }
+  } catch (error) {
+    throw new Error("Failed to add item to cart");
   }
-
-  await redis.set(`cart-${user.id}`, myCart);
-
-  revalidatePath("/", "layout");
 }
 
 export async function delItem(formData: FormData) {
@@ -331,23 +367,28 @@ export async function delItem(formData: FormData) {
   const user = await getUser();
 
   if (!user) {
-    return redirect("/");
+    const productId = formData.get("itemCartId") as string;
+    if (productId) {
+      deleteGuestCartItem(productId);
+      revalidatePath("/bag");
+    }
+    return;
   }
 
-  const productId = formData.get("productId");
+  const itemCartId = formData.get("itemCartId");
 
-  let cart: Cart | null = await redis.get(`cart-${user.id}`);
-
-  if (cart && cart.items) {
-    const updateCart: Cart = {
-      userId: user.id,
-      items: cart.items.filter((item) => item.id !== productId),
-    };
-
-    await redis.set(`cart-${user.id}`, updateCart);
+  if (!itemCartId) {
+    return { message: "Item not found in cart." };
   }
 
+  // Remove the item from the cart
+  await prisma.cartItem.delete({
+    where: {
+      id: Number(itemCartId),
+    },
+  });
   revalidatePath("/bag");
+  return { message: "Item removed from cart." };
 }
 
 export async function checkOut() {
@@ -355,41 +396,111 @@ export async function checkOut() {
   const user = await getUser();
 
   if (!user) {
-    return redirect("/");
-  }
-
-  let cart: Cart | null = await redis.get(`cart-${user.id}`);
-
-  if (cart && cart.items) {
-    const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] =
-      cart.items.map((item) => ({
-        price_data: {
-          currency: "usd",
-          unit_amount: item.price * 100,
-          product_data: {
-            name: item.name,
-            images: [item.imageString],
+    let guestcart: GuestCart = await getGuestCartt();
+    const products = await getProductsFromGuestCart(guestcart);
+    const cartWithQuantities = products?.map((product) => {
+      const cartItem = guestcart.items.find(
+        (item) => item.productId === product.id
+      );
+      return {
+        ...product,
+        quantity: cartItem?.quantity || 1,
+      };
+    });
+    if (guestcart && guestcart.items) {
+      const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] =
+        cartWithQuantities.map((item) => ({
+          price_data: {
+            currency: "usd",
+            unit_amount: item.NewPrice ? item.NewPrice * 100 : item.price * 100,
+            product_data: {
+              name: item.name,
+              images: [item.images[0]],
+            },
           },
+          quantity: item.quantity,
+        }));
+      const cartItemsSimple = guestcart.items.map((item) => ({
+        id: item.productId,
+        quantity: item.quantity,
+      }));
+      const session = await stripe.checkout.sessions.create({
+        mode: "payment",
+        line_items: lineItems,
+        // Specify the payment method type
+        billing_address_collection: "required",
+
+        success_url:
+          process.env.NODE_ENV === "development"
+            ? `${process.env.KINDE_SITE_URL}/payment/success`
+            : `${process.env.DEPLOYMENT_URL}/payment/success`,
+        cancel_url:
+          process.env.NODE_ENV === "development"
+            ? `${process.env.KINDE_SITE_URL}/payment/cancel`
+            : `${process.env.DEPLOYMENT_URL}/payment/cancel`,
+
+        metadata: {
+          cartItems: JSON.stringify(cartItemsSimple),
         },
+        phone_number_collection: {
+          enabled: true,
+        },
+        //customer_email: user.email,
+      });
+      return redirect(session.url as string);
+    }
+  }
+  // let cart: Cart | null = await redis.get(`cart-${user.id}`);
+
+  if (user) {
+    let cart = await getCart();
+    if (cart && cart.items) {
+      const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] =
+        cart.items.map((item) => ({
+          price_data: {
+            currency: "usd",
+            unit_amount: item.product.NewPrice
+              ? item.product.NewPrice * 100
+              : item.product.price * 100,
+            product_data: {
+              name: item.product.name,
+              images: [item.product.images[0]],
+            },
+          },
+          quantity: item.quantity,
+        }));
+      const cartItemsSimple = cart.items.map((item) => ({
+        id: item.product.id,
         quantity: item.quantity,
       }));
 
-    const session = await stripe.checkout.sessions.create({
-      mode: "payment",
-      line_items: lineItems,
-      success_url:
-        process.env.NODE_ENV === "development"
-          ? `${process.env.KINDE_SITE_URL}/payment/success`
-          : "https://shoe-marshal.vercel.app/payment/success",
-      cancel_url:
-        process.env.NODE_ENV === "development"
-          ? `${process.env.KINDE_SITE_URL}/payment/cancel`
-          : "https://shoe-marshal.vercel.app/payment/cancel",
-      metadata: {
-        userId: user.id,
-      },
-    });
+      const session = await stripe.checkout.sessions.create({
+        mode: "payment",
+        line_items: lineItems,
+        // Specify the payment method type
+        billing_address_collection: "required",
 
-    return redirect(session.url as string);
+        success_url:
+          process.env.NODE_ENV === "development"
+            ? `${process.env.KINDE_SITE_URL}/payment/success`
+            : `${process.env.DEPLOYMENT_URL}/payment/success`,
+        cancel_url:
+          process.env.NODE_ENV === "development"
+            ? `${process.env.KINDE_SITE_URL}/payment/cancel`
+            : `${process.env.DEPLOYMENT_URL}/payment/cancel`,
+
+        metadata: {
+          userId: user.id,
+          customer_email: user.email,
+          cartItems: JSON.stringify(cartItemsSimple),
+        },
+        phone_number_collection: {
+          enabled: true,
+        },
+        //customer_email: user.email,
+      });
+
+      return redirect(session.url as string);
+    }
   }
 }

@@ -2,9 +2,18 @@ export type Cart = {
   userId: string;
   items: Array<{
     id: string;
-    name: string;
-    price: number;
+    cartId: string;
+    productId: string;
     quantity: number;
-    imageString: string;
+    // imageString: string;
   }>;
 };
+
+export interface CartGuestItem {
+  productId: string;
+  quantity: number;
+}
+
+export interface GuestCart {
+  items: CartGuestItem[];
+}

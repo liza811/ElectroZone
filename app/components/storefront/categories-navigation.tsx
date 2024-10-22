@@ -41,7 +41,7 @@ export async function CategoriesNavigation() {
       <DropdownMenuTrigger asChild>
         <Button
           variant="outline"
-          className="relative transition-all group p-2 font-[600] hover:text-primary bg-none bg-transparent hover:bg-transparent ml-3 focus-visible:ring-0 focus:ring-0 focus-visible:ring-offset-0"
+          className="relative transition-all group md:p-2 mt-1 md:mt-0 -ml-7 -md:ml-0 font-[600] hover:text-primary bg-none bg-transparent hover:bg-transparent text-base md:ml-3 focus-visible:ring-0 focus:ring-0 focus-visible:ring-offset-0"
         >
           All categories
         </Button>

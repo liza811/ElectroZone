@@ -7,6 +7,10 @@ import prisma from "@/app/lib/db";
 import { notFound } from "next/navigation";
 import { unstable_noStore as noStore } from "next/cache";
 import { RelatedProducts } from "@/app/components/storefront/related-products";
+import { BaggageClaim, InfoIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import Image from "next/image";
+import QuantitySelector from "@/app/components/storefront/quantity-selector";
 
 async function getData(productId: string) {
   const data = await prisma.product.findUnique({
@@ -38,47 +42,79 @@ export default async function ProductIdRoute({
 }) {
   noStore();
   const data = await getData(params.id);
-  const addProducttoShoppingCart = addItem.bind(null, data.id);
+
   return (
     <>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start lg:gap-x-24 py-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start lg:gap-x-24 py-6 ">
         <ImageSlider images={data.images} />
-        <div>
+        <div className="mt-3">
           <h1 className="text-3xl font-extrabold tracking-tight text-gray-900">
             {data.name}
           </h1>
 
           {!!data.NewPrice ? (
-            <div className="h-fit flex flex-row-reverse gap-x-2 w-fit items-center gap-y-2 mt-3">
-              <h3 className="inline-flex items-center rounded-md bg-red-500/10 px-2 py-1 text-base font-medium text-red-500 ring-1 ring-inset ring-red-500/10">
+            <div className="h-fit flex flex-row-reverse gap-x-2 w-fit items-center gap-y-2 mt-3 font-semibold">
+              <h3 className="inline-flex items-center rounded-md bg-red-500/10 px-3 py-1 text-[20px] font-medium text-red-500 ring-1 ring-inset ring-red-500/10">
                 ${data.NewPrice}
               </h3>
-              <p className="text-slate-600 text-sm line-through">
+              <p className="text-slate-600 text-base px-3 line-through">
                 {" "}
                 ${data.price}
               </p>
             </div>
           ) : (
-            <p className="inline-flex  mt-3 items-center rounded-md bg-primary/10 px-2 py-1 text-base font-medium text-primary ring-1 ring-inset ring-primary/10">
+            <p className="inline-flex  mt-3 items-center rounded-md bg-primary/10 px-3 py-1 text-[20px] font-medium text-primary ring-1 ring-inset ring-primary/10">
               ${data.price}
             </p>
           )}
-          {/* <div className="mt-3 flex items-center gap-1">
-            <StarIcon className="h-4 w-4 text-yellow-500 fill-yellow-500" />
-            <StarIcon className="h-4 w-4 text-yellow-500 fill-yellow-500" />
-            <StarIcon className="h-4 w-4 text-yellow-500 fill-yellow-500" />
-            <StarIcon className="h-4 w-4 text-yellow-500 fill-yellow-500" />
-            <StarIcon className="h-4 w-4 text-yellow-500 fill-yellow-500" />
-          </div> */}
-          <p className="text-base text-gray-700 mt-6">{data.description}</p>
 
-          <form action={addProducttoShoppingCart}>
-            <ShoppingBagButton />
-          </form>
+          <p className="text-base text-gray-700 mt-6">{data.description}</p>
+          <QuantitySelector productId={data.id} totalQuantity={data.quantity} />
+
+          <div className="w-full flex justify-center">
+            <Button size="lg" className="w-[80%] mt-5" type="submit">
+              <BaggageClaim className="mr-4 h-5 w-5" /> Buy it Now
+            </Button>
+          </div>
+
+          <div className="w-full flex justify-center gap-x-2 mt-3">
+            <Image
+              alt="mastercard"
+              src={"/mastercard.svg"}
+              width={50}
+              height={60}
+              className="rounded-sm border object-cover"
+            />
+            <Image
+              alt="apple"
+              src={"/apple.svg"}
+              width={50}
+              height={60}
+              className="rounded-sm border object-cover"
+            />
+            <Image
+              alt="americanexpress"
+              src={"/americanexpress.svg"}
+              width={50}
+              height={60}
+              className="rounded-sm border object-cover"
+            />
+            <Image
+              alt="visa card"
+              src={"/visa.svg"}
+              width={50}
+              height={60}
+              className="rounded-sm border object-cover"
+            />
+          </div>
+          <p className=" flex gap-x-2 mt-4 font-bold text-blue-950">
+            <InfoIcon className="size-6 text-orange-500" />
+            Only {data.quantity} left in stock!
+          </p>
         </div>
       </div>
 
-      <div className="my-12">
+      <div className="my-2">
         <RelatedProducts productId={params.id} />
       </div>
     </>

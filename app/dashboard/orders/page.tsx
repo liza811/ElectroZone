@@ -23,11 +23,32 @@ async function getData() {
       createdAt: true,
       status: true,
       id: true,
+      guestEmail: true,
+      guestName: true,
+      guestPhone: true,
+      billingAddressLine1: true,
+      billingAddressLine2: true,
+      billingCity: true,
+      billingCountry: true,
+      billingPostalCode: true,
+      orderItems: {
+        select: {
+          quantity: true,
+          product: {
+            select: {
+              id: true,
+              name: true,
+              price: true,
+              NewPrice: true,
+            },
+          },
+        },
+      },
       User: {
         select: {
           firstName: true,
+          lastName: true,
           email: true,
-          profileImage: true,
         },
       },
     },
@@ -43,44 +64,100 @@ export default async function OrdersPage() {
   noStore();
   const data = await getData();
   return (
-    <Card>
-      <CardHeader className="px-7">
-        <CardTitle>Orders</CardTitle>
-        <CardDescription>Recent orders from your store!</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Customer</TableHead>
-              <TableHead>Type</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Date</TableHead>
-              <TableHead className="text-right">Amount</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {data.map((item) => (
-              <TableRow key={item.id}>
-                <TableCell>
-                  <p className="font-medium">{item.User?.firstName}</p>
-                  <p className="hidden md:flex text-sm text-muted-foreground">
-                    {item.User?.email}
-                  </p>
-                </TableCell>
-                <TableCell>Order</TableCell>
-                <TableCell>{item.status}</TableCell>
-                <TableCell>
-                  {new Intl.DateTimeFormat("en-US").format(item.createdAt)}
-                </TableCell>
-                <TableCell className="text-right">
-                  ${new Intl.NumberFormat("en-US").format(item.amount / 100)}
-                </TableCell>
+    <main className="my-10">
+      <Card>
+        <CardHeader className="  px-4">
+          <CardTitle>Orders</CardTitle>
+          <CardDescription>Recent orders from your store!</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Customer</TableHead>
+                <TableHead>Order</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Date</TableHead>
+                <TableHead>Address</TableHead>
+                <TableHead className="text-right">Amount</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </CardContent>
-    </Card>
+            </TableHeader>
+            <TableBody>
+              {data.map((item) => (
+                <TableRow key={item.id}>
+                  <TableCell>
+                    <p className="font-medium">
+                      {item.guestName || item.User?.firstName}
+                    </p>
+                    <p className="hidden md:flex text-sm text-muted-foreground">
+                      {item.guestPhone || item.guestEmail || item.User?.email}
+                    </p>
+                  </TableCell>
+                  <TableCell>
+                    <div className="space-y-2">
+                      {item.orderItems.map((o) => (
+                        <div key={o.product.id} className="border-b py-2">
+                          <p className="font-semibold text-sm">
+                            {o.product.name}
+                          </p>
+                          <div className="flex justify-between text-sm text-muted-foreground">
+                            <span>Quantity: {o.quantity}</span>
+                            <span>
+                              Price: ${o.product.NewPrice || o.product.price}
+                            </span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    {" "}
+                    <span
+                      className={`inline-block  text-xs font-semibold capitalize  px-3 py-1.5 text-center rounded-md
+            ${
+              item.status === "complete"
+                ? "bg-[#33D69F1A] text-[#33D69F]"
+                : item.status === "pending"
+                ? "bg-[#ff8F001A] text-[#ff8F00]"
+                : "bg-[#FF00001A] text-[#FF0000]"
+            }`}
+                    >
+                      {item.status}
+                    </span>
+                  </TableCell>
+                  <TableCell>
+                    {new Intl.DateTimeFormat("en-US", {
+                      year: "numeric",
+                      month: "short",
+                      day: "2-digit",
+                    }).format(new Date(item.createdAt))}
+                  </TableCell>
+                  <TableCell>
+                    <div className="text-sm text-muted-foreground">
+                      <p>{item.billingAddressLine1}</p>
+                      {item.billingAddressLine2 && (
+                        <p>{item.billingAddressLine2}</p>
+                      )}
+                      <p>
+                        {item.billingCity} {item.billingPostalCode}{" "}
+                        {item.billingCountry}
+                      </p>
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-right font-semibold text-gray-800">
+                    {new Intl.NumberFormat("en-US", {
+                      style: "currency",
+                      currency: "USD",
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    }).format(item.amount / 100)}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+    </main>
   );
 }

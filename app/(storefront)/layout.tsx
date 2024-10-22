@@ -8,7 +8,7 @@ export default function StoreFrontLayout({
   children: ReactNode;
 }) {
   return (
-    <main className="flex flex-col min-h-screen">
+    <main className="flex flex-col w-full min-h-screen">
       <Navbar />
       <main className=" px-4 sm:px-6 lg:px-8 bg-[#e3e6f3]/40 pt-[80px] h-full w-full flex-grow">
         {children}

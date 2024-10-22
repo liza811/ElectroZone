@@ -1,15 +1,12 @@
-import { checkOut, delItem } from "@/app/actions";
-import { ChceckoutButton, DeleteItem } from "@/app/components/SubmitButtons";
-import { Cart } from "@/app/lib/interfaces";
-import { redis } from "@/app/lib/redis";
-import { Button } from "@/components/ui/button";
+import { checkOut } from "@/app/actions";
+import { ChceckoutButton } from "@/app/components/SubmitButtons";
+
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
-import { ShoppingBag } from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
+
 import { unstable_noStore as noStore } from "next/cache";
 
-import { redirect } from "next/navigation";
+import { getCart, getGuestCart, getProductsFromGuestCart } from "@/lib/cart";
+import { CartItem, EmptyCart } from "@/app/components/storefront/cart-item";
 
 export default async function BagRoute() {
   noStore();
@@ -17,63 +14,87 @@ export default async function BagRoute() {
   const user = await getUser();
 
   if (!user) {
-    redirect("/api/auth/creation");
+    const guestCart = await getGuestCart();
+
+    if (!guestCart || !guestCart.items || guestCart.items.length === 0) {
+      <div className="max-w-2xl mx-auto mt-10 min-h-[55vh]">
+        <EmptyCart />
+      </div>;
+    } else {
+      let totalPrice = 0;
+
+      const products = await getProductsFromGuestCart(guestCart);
+      const cartWithQuantities = products?.map((product) => {
+        const cartItem = guestCart.items.find(
+          (item) => item.productId === product.id
+        );
+        return {
+          ...product,
+          quantity: cartItem?.quantity || 1,
+        };
+      });
+      cartWithQuantities.forEach((item) => {
+        const productPrice = item.NewPrice || item.price;
+        totalPrice += (productPrice || 0) * item.quantity;
+      });
+      return (
+        <div className="flex flex-col gap-y-10 max-w-2xl mx-auto mt-10 min-h-[55vh]">
+          {cartWithQuantities?.map((item) => (
+            <div key={item.id} className="flex">
+              <CartItem
+                productId={item.id}
+                image={item.images[0]}
+                name={item.name}
+                newPrice={item.NewPrice}
+                price={item.price}
+                quantity={item.quantity}
+                isGuest
+              />
+            </div>
+          ))}
+          <div className="mt-10">
+            <div className="flex items-center justify-between font-medium">
+              <p>Subtotal:</p>
+              <p>${new Intl.NumberFormat("en-US").format(totalPrice)}</p>
+            </div>
+
+            <form action={checkOut}>
+              <ChceckoutButton />
+            </form>
+          </div>
+        </div>
+      );
+    }
   }
 
-  const cart: Cart | null = await redis.get(`cart-${user.id}`);
+  const cart = await getCart();
 
   let totalPrice = 0;
 
-  cart?.items.forEach((item) => {
-    totalPrice += item.price * item.quantity;
-  });
+  if (cart && cart.items) {
+    cart.items.forEach((item) => {
+      const productPrice = item.product?.NewPrice || item.product?.price;
+      totalPrice += (productPrice || 0) * item.quantity;
+    });
+  }
 
   return (
     <div className="max-w-2xl mx-auto mt-10 min-h-[55vh]">
-      {!cart || !cart.items ? (
-        <div className="flex min-h-[400px] flex-col items-center justify-center rounded-lg border border-dashed p-8 text-center mt-20">
-          <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary/10">
-            <ShoppingBag className="w-10 h-10 text-primary" />
-          </div>
-
-          <h2 className="mt-6 text-xl font-semibold">
-            You dont have any products in your Bag
-          </h2>
-          <p className="mb-8 mt-2 text-center text-sm leading-6 text-muted-foreground max-w-sm mx-auto">
-            You currently dont have any products in your shopping bag. Please
-            add some so that you can see them right here.
-          </p>
-
-          <Button asChild>
-            <Link href="/">Shop Now!</Link>
-          </Button>
-        </div>
+      {!cart || !cart.items || cart.items.length === 0 ? (
+        <EmptyCart />
       ) : (
-        <div className="flex flex-col gap-y-10">
+        <div className="flex flex-col gap-y-10 max-w-2xl mx-auto mt-10 min-h-[55vh]">
           {cart?.items.map((item) => (
             <div key={item.id} className="flex">
-              <div className="w-24 h-24 sm:w-32 sm:h-32 relative">
-                <Image
-                  className="rounded-md object-cover"
-                  fill
-                  src={item.imageString}
-                  alt="Product image"
-                />
-              </div>
-              <div className="ml-5 flex justify-between w-full font-medium">
-                <p>{item.name}</p>
-                <div className="flex flex-col h-full justify-between">
-                  <div className="flex items-center gap-x-2">
-                    <p>{item.quantity} x</p>
-                    <p>${item.price}</p>
-                  </div>
-
-                  <form action={delItem} className="text-end">
-                    <input type="hidden" name="productId" value={item.id} />
-                    <DeleteItem />
-                  </form>
-                </div>
-              </div>
+              <CartItem
+                id={item.id}
+                image={item.product.images[0]}
+                name={item.product.name}
+                newPrice={item.product.NewPrice}
+                price={item.product.price}
+                quantity={item.quantity}
+                isGuest={false}
+              />
             </div>
           ))}
           <div className="mt-10">

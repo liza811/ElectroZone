@@ -1,4 +1,4 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -9,7 +9,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { LogoutLink } from "@kinde-oss/kinde-auth-nextjs/components";
-import { User } from "lucide-react";
+import { LogOutIcon } from "lucide-react";
 
 interface iAppProps {
   email: string;
@@ -23,7 +23,7 @@ export function UserDropdown({ email, name, userImage }: iAppProps) {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
-          className="relative h-10 w-10 rounded-full  text-white"
+          className="relative h-10 w-10 rounded-full  text-white -mr-5 md:-mr-0"
           variant={"outline"}
         >
           {userImage !== null ? (
@@ -43,18 +43,6 @@ export function UserDropdown({ email, name, userImage }: iAppProps) {
             </p>
           )}
         </Button>
-
-        {/* <Button variant="ghost" className="relative h-10 w-10 rounded-full">
-          <Avatar className="h-10 w-10">
-            <AvatarImage src={userImage} alt="User Image" />
-            <AvatarFallback className="bg-primary">
-              <span className="flex items-center justify-center font-bold text-white text-[20px]">
-                {name.slice(0, 3)}
-              </span>
-            </AvatarFallback>
-            <AvatarFallback>{name.slice(0, 3)}</AvatarFallback>
-          </Avatar>
-        </Button> */}
       </DropdownMenuTrigger>
       <DropdownMenuContent
         className="w-56 bg-neutral-50"
@@ -67,7 +55,10 @@ export function UserDropdown({ email, name, userImage }: iAppProps) {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
-          <LogoutLink>Log out</LogoutLink>
+          <LogoutLink className="flex gap-x-2 items-center">
+            <LogOutIcon className="size-4 text-slate-500 " />
+            Log out
+          </LogoutLink>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
