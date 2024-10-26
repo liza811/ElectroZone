@@ -33,7 +33,7 @@ export async function Navbar() {
       <div className="flex items-center ">
         <Link
           href="/"
-          className="md:w-[180px] md:h-[180px] w-[120px] h-[120px]"
+          className="md:w-[180px] md:h-[180px] w-[120px] h-[120px] flex"
         >
           <Image
             src={"/awramart-logo.png"}
