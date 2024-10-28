@@ -36,7 +36,7 @@ export async function Navbar() {
           className="md:w-[180px] md:h-[180px] w-[120px] h-[120px] flex"
         >
           <Image
-            src={"/awramart.png"}
+            src={"/men.jpeg"}
             alt={"Logo"}
             width={200}
             height={200}
