@@ -71,12 +71,6 @@ export default async function ProductIdRoute({
           <p className="text-base text-gray-700 mt-6">{data.description}</p>
           <QuantitySelector productId={data.id} totalQuantity={data.quantity} />
 
-          <div className="w-full flex justify-center">
-            <Button size="lg" className="w-[80%] mt-5" type="submit">
-              <BaggageClaim className="mr-4 h-5 w-5" /> Buy it Now
-            </Button>
-          </div>
-
           <div className="w-full flex justify-center gap-x-2 mt-3">
             <Image
               alt="mastercard"

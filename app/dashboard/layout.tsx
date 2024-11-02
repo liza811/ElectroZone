@@ -22,10 +22,12 @@ export default async function DashboardLayout({
   children: ReactNode;
 }) {
   noStore();
-  const { getUser } = getKindeServerSession();
+  const { getUser, getPermission } = getKindeServerSession();
   const user = await getUser();
+  const permission = await getPermission("dashboard");
 
-  if (!user || user.email !== process.env.ADMIN_EMAIL) {
+  const isAdmin = permission?.isGranted ? true : false;
+  if (!user || !isAdmin) {
     return redirect("/");
   }
   return (

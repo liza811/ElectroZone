@@ -9,7 +9,7 @@ import prisma from "./lib/db";
 import { revalidatePath } from "next/cache";
 import { stripe } from "./lib/stripe";
 import Stripe from "stripe";
-import { Cart, GuestCart } from "./lib/interfaces";
+import { GuestCart } from "./lib/interfaces";
 import { cookies } from "next/headers";
 import {
   deleteGuestCartItem,
@@ -20,10 +20,12 @@ import {
 } from "@/lib/cart";
 
 export async function createProduct(prevState: unknown, formData: FormData) {
-  const { getUser } = getKindeServerSession();
+  const { getUser, getPermission } = getKindeServerSession();
   const user = await getUser();
+  const permission = await getPermission("dashboard");
 
-  if (!user || user.email !== process.env.ADMIN_EMAIL) {
+  const isAdmin = permission?.isGranted ? true : false;
+  if (!user || !isAdmin) {
     return redirect("/");
   }
 
@@ -99,10 +101,12 @@ export async function editProduct(prevState: any, formData: FormData) {
 }
 
 export async function editCategory(prevState: any, formData: FormData) {
-  const { getUser } = getKindeServerSession();
+  const { getUser, getPermission } = getKindeServerSession();
   const user = await getUser();
+  const permission = await getPermission("dashboard");
 
-  if (!user || user.email !== process.env.ADMIN_EMAIL) {
+  const isAdmin = permission?.isGranted ? true : false;
+  if (!user || !isAdmin) {
     return redirect("/");
   }
 
@@ -132,10 +136,12 @@ export async function editCategory(prevState: any, formData: FormData) {
 }
 
 export async function editBanner(prevState: any, formData: FormData) {
-  const { getUser } = getKindeServerSession();
+  const { getUser, getPermission } = getKindeServerSession();
   const user = await getUser();
+  const permission = await getPermission("dashboard");
 
-  if (!user || user.email !== process.env.ADMIN_EMAIL) {
+  const isAdmin = permission?.isGranted ? true : false;
+  if (!user || !isAdmin) {
     return redirect("/");
   }
 
@@ -164,10 +170,12 @@ export async function editBanner(prevState: any, formData: FormData) {
   redirect("/dashboard/banner");
 }
 export async function deleteProduct(productId: string) {
-  const { getUser } = getKindeServerSession();
+  const { getUser, getPermission } = getKindeServerSession();
   const user = await getUser();
+  const permission = await getPermission("dashboard");
 
-  if (!user || user.email !== process.env.ADMIN_EMAIL) {
+  const isAdmin = permission?.isGranted ? true : false;
+  if (!user || !isAdmin) {
     return redirect("/");
   }
 
@@ -181,10 +189,12 @@ export async function deleteProduct(productId: string) {
   return { success: "Product Deleted!" };
 }
 export async function createCategory(prevState: any, formData: FormData) {
-  const { getUser } = getKindeServerSession();
+  const { getUser, getPermission } = getKindeServerSession();
   const user = await getUser();
+  const permission = await getPermission("dashboard");
 
-  if (!user || user.email !== "lizadjebara49@gmail.com") {
+  const isAdmin = permission?.isGranted ? true : false;
+  if (!user || !isAdmin) {
     return redirect("/");
   }
 
@@ -206,10 +216,12 @@ export async function createCategory(prevState: any, formData: FormData) {
   redirect("/dashboard/categories");
 }
 export async function createBanner(prevState: any, formData: FormData) {
-  const { getUser } = getKindeServerSession();
+  const { getUser, getPermission } = getKindeServerSession();
   const user = await getUser();
+  const permission = await getPermission("dashboard");
 
-  if (!user || user.email !== "lizadjebara49@gmail.com") {
+  const isAdmin = permission?.isGranted ? true : false;
+  if (!user || !isAdmin) {
     return redirect("/");
   }
 
@@ -232,10 +244,12 @@ export async function createBanner(prevState: any, formData: FormData) {
 }
 
 export async function deleteBanner(bannerId: string) {
-  const { getUser } = getKindeServerSession();
+  const { getUser, getPermission } = getKindeServerSession();
   const user = await getUser();
+  const permission = await getPermission("dashboard");
 
-  if (!user || user.email !== process.env.ADMIN_EMAIL) {
+  const isAdmin = permission?.isGranted ? true : false;
+  if (!user || !isAdmin) {
     return redirect("/");
   }
 
@@ -249,10 +263,12 @@ export async function deleteBanner(bannerId: string) {
   return { success: "Banner Deleted!" };
 }
 export async function deleteCategory(categoryId: string) {
-  const { getUser } = getKindeServerSession();
+  const { getUser, getPermission } = getKindeServerSession();
   const user = await getUser();
+  const permission = await getPermission("dashboard");
 
-  if (!user || user.email !== process.env.ADMIN_EMAIL) {
+  const isAdmin = permission?.isGranted ? true : false;
+  if (!user || !isAdmin) {
     return redirect("/");
   }
 
@@ -504,3 +520,73 @@ export async function checkOut() {
     }
   }
 }
+
+export async function buyNow(productId: string, quantity: number) {
+  const { getUser } = getKindeServerSession();
+  const user = await getUser();
+
+  const product = await prisma.product.findUnique({
+    where: { id: productId },
+  });
+
+  if (product) {
+    const cartItemsSimple = {
+      id: product.id,
+      quantity: quantity,
+    };
+
+    const session = await stripe.checkout.sessions.create({
+      mode: "payment",
+      line_items: [
+        {
+          price_data: {
+            currency: "usd",
+            unit_amount: product.NewPrice
+              ? product.NewPrice * 100
+              : product.price * 100,
+            product_data: {
+              name: product.name,
+              images: [product.images[0]],
+            },
+          },
+          quantity: quantity,
+        },
+      ],
+      billing_address_collection: "required",
+
+      success_url:
+        process.env.NODE_ENV === "development"
+          ? `${process.env.KINDE_SITE_URL}/payment/success`
+          : `${process.env.DEPLOYMENT_URL}/payment/success`,
+      cancel_url:
+        process.env.NODE_ENV === "development"
+          ? `${process.env.KINDE_SITE_URL}/payment/cancel`
+          : `${process.env.DEPLOYMENT_URL}/payment/cancel`,
+
+      metadata: {
+        userId: user?.id || "",
+        customer_email: user?.email || "",
+        cartItems: JSON.stringify(cartItemsSimple),
+      },
+      phone_number_collection: {
+        enabled: true,
+      },
+      //customer_email: user.email,
+    });
+
+    return redirect(session.url as string);
+  }
+}
+
+export const searchProducts = async (query: string) => {
+  if (!query) return [];
+  const products = await prisma.product.findMany({
+    where: {
+      name: {
+        contains: query,
+        mode: "insensitive",
+      },
+    },
+  });
+  return products;
+};

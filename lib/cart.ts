@@ -1,5 +1,5 @@
 import prisma from "@/app/lib/db";
-
+import { cookies } from "next/headers";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { revalidatePath } from "next/cache";
 
@@ -34,8 +34,6 @@ export const getCart = async () => {
   return cart;
 };
 
-import { cookies } from "next/headers";
-
 export async function getGuestCart(): Promise<GuestCart> {
   const cookieStore = cookies();
   const cartCookie = cookieStore.get("guest_cart");
@@ -51,6 +49,14 @@ export function getGuestCartt(): GuestCart {
   const cookieStore = cookies();
   const cartCookie = cookieStore.get("guest_cart")?.value;
   return cartCookie ? JSON.parse(cartCookie) : { items: [] };
+}
+
+export async function clearCart() {
+  const cookieStore = cookies();
+
+  cookieStore.set("guest_cart", "", { expires: new Date(0), path: "/" });
+  revalidatePath("/");
+  revalidatePath("/cart");
 }
 export function saveGuestCart(cart: GuestCart) {
   const cookieStore = cookies();

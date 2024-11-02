@@ -1,6 +1,7 @@
 import prisma from "@/app/lib/db";
 
 import { stripe } from "@/app/lib/stripe";
+import { clearCart } from "@/lib/cart";
 import { cookies, headers } from "next/headers";
 
 export async function POST(req: Request) {
@@ -24,10 +25,13 @@ export async function POST(req: Request) {
     case "checkout.session.completed": {
       const session = event.data.object;
       // Parse the cart items from metadata
-      const cartItemss = session.metadata
+      let cartItemss = session.metadata
         ? JSON.parse(session.metadata.cartItems)
         : [];
-      console.log(cartItemss);
+      if (!Array.isArray(cartItemss)) {
+        cartItemss = [cartItemss];
+      }
+
       const userId = session.metadata?.userId || null;
       const email = session.customer_details?.email;
       const phone = session.customer_details?.phone;
@@ -66,8 +70,7 @@ export async function POST(req: Request) {
           },
         });
       } else {
-        const cookieStore = cookies();
-        cookieStore.set("guest_cart", JSON.stringify([]));
+        clearCart();
       }
       break;
     }

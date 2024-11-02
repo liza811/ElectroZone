@@ -1,10 +1,10 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { addItem } from "@/app/actions";
+import { addItem, buyNow } from "@/app/actions";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Loader2, ShoppingBag } from "lucide-react";
+import { BaggageClaim, Loader2, ShoppingBag } from "lucide-react";
 
 interface QuantitySelectorProps {
   productId: string;
@@ -16,16 +16,32 @@ export default function QuantitySelector({
   totalQuantity,
 }: QuantitySelectorProps) {
   const [quantity, setQuantity] = useState(1);
-  const [isPending, startTransition] = useTransition();
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
+  const [isBuyingNow, setIsBuyingNow] = useState(false);
+  const [, startTransition] = useTransition();
+
   const disabledPlus = quantity === totalQuantity;
   const disabledMinus = quantity === 1;
+
   const handleQuantityChange = (delta: number) => {
     setQuantity((prevQuantity) => Math.max(1, prevQuantity + delta));
   };
 
   const handleAddToCart = () => {
+    setIsAddingToCart(true);
     startTransition(() => {
-      addItem(productId, quantity);
+      addItem(productId, quantity).finally(() => {
+        setIsAddingToCart(false);
+      });
+    });
+  };
+
+  const handleBuy = () => {
+    setIsBuyingNow(true);
+    startTransition(() => {
+      buyNow(productId, quantity).finally(() => {
+        setIsBuyingNow(false);
+      });
     });
   };
 
@@ -59,28 +75,41 @@ export default function QuantitySelector({
         </button>
       </div>
       <div className="w-full flex justify-center mt-3">
-        {isPending ? (
-          <Button disabled size="lg" className="w-[80%] mt-5">
-            <Loader2 className="mr-4 h-5 w-5 animate-spin" /> Adding...
-          </Button>
-        ) : (
-          <Button
-            size="lg"
-            className="w-[80%] mt-5 "
-            type="submit"
-            onClick={handleAddToCart}
-          >
-            <ShoppingBag className="mr-4 h-5 w-5" /> Add to Cart
-          </Button>
-        )}
+        <Button
+          size="lg"
+          className="w-[80%] mt-5"
+          onClick={handleAddToCart}
+          disabled={isAddingToCart}
+        >
+          {isAddingToCart ? (
+            <>
+              <Loader2 className="mr-4 h-5 w-5 animate-spin" /> Adding...
+            </>
+          ) : (
+            <>
+              <ShoppingBag className="mr-4 h-5 w-5" /> Add to Cart
+            </>
+          )}
+        </Button>
       </div>
-      {/* <button
-        onClick={handleAddToCart}
-        className="mt-4 bg-blue-500 text-white py-2 px-4 rounded"
-        disabled={isPending}
-      >
-        {isPending ? "Adding..." : "Add to Cart"}
-      </button> */}
+      <div className="w-full flex justify-center">
+        <Button
+          size="lg"
+          className="w-[80%] mt-5"
+          onClick={handleBuy}
+          disabled={isBuyingNow}
+        >
+          {isBuyingNow ? (
+            <>
+              <Loader2 className="mr-4 h-5 w-5 animate-spin" /> Buying...
+            </>
+          ) : (
+            <>
+              <BaggageClaim className="mr-4 h-5 w-5" /> Buy it Now
+            </>
+          )}
+        </Button>
+      </div>
     </div>
   );
 }

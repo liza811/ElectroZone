@@ -16,9 +16,12 @@ import { getCart, getGuestCartt } from "@/lib/cart";
 import Image from "next/image";
 
 export async function Navbar() {
-  const { getUser } = getKindeServerSession();
+  const { getUser, getPermission } = getKindeServerSession();
   const user = await getUser();
-  const isAdmin = user?.email === process.env.ADMIN_EMAIL;
+
+  const permission = await getPermission("dashboard");
+
+  const isAdmin = permission?.isGranted ? true : false;
 
   let cart;
 
