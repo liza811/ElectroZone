@@ -55,21 +55,25 @@ export default async function ProductIdRoute({
           {!!data.NewPrice ? (
             <div className="h-fit flex flex-row-reverse gap-x-2 w-fit items-center gap-y-2 mt-3 font-semibold">
               <h3 className="inline-flex items-center rounded-md bg-red-500/10 px-3 py-1 text-[20px] font-medium text-red-500 ring-1 ring-inset ring-red-500/10">
-                ${data.NewPrice}
+                {data.NewPrice} AED
               </h3>
               <p className="text-slate-600 text-base px-3 line-through">
                 {" "}
-                ${data.price}
+                {data.price} AED
               </p>
             </div>
           ) : (
             <p className="inline-flex  mt-3 items-center rounded-md bg-primary/10 px-3 py-1 text-[20px] font-medium text-primary ring-1 ring-inset ring-primary/10">
-              ${data.price}
+              {data.price} AED
             </p>
           )}
 
           <p className="text-base text-gray-700 mt-6">{data.description}</p>
-          <QuantitySelector productId={data.id} totalQuantity={data.quantity} />
+          <QuantitySelector
+            productId={data.id}
+            totalQuantity={data.quantity}
+            outOfStock={data.quantity === 0 ? true : false}
+          />
 
           <div className="w-full flex justify-center gap-x-2 mt-3">
             <Image
@@ -103,7 +107,9 @@ export default async function ProductIdRoute({
           </div>
           <p className=" flex gap-x-2 mt-4 font-bold text-blue-950">
             <InfoIcon className="size-6 text-orange-500" />
-            Only {data.quantity} left in stock!
+            {data.quantity === 1
+              ? ` Only ${data.quantity} left in stock!`
+              : `${data.quantity} left in stock!`}
           </p>
         </div>
       </div>

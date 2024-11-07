@@ -55,7 +55,7 @@ export default async function BagRoute() {
           <div className="mt-10">
             <div className="flex items-center justify-between font-medium">
               <p>Subtotal:</p>
-              <p>${new Intl.NumberFormat("en-US").format(totalPrice)}</p>
+              <p>{new Intl.NumberFormat("en-US").format(totalPrice)} AED</p>
             </div>
 
             <form action={checkOut}>

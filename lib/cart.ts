@@ -51,13 +51,25 @@ export function getGuestCartt(): GuestCart {
   return cartCookie ? JSON.parse(cartCookie) : { items: [] };
 }
 
-export async function clearCart() {
-  const cookieStore = cookies();
+export function clearCart() {
+  const guestCart = getGuestCartt();
 
-  cookieStore.set("guest_cart", "", { expires: new Date(0), path: "/" });
-  revalidatePath("/");
-  revalidatePath("/cart");
+  if (guestCart?.items) {
+    // Iterate over each item and remove it
+    guestCart.items.forEach((item: CartGuestItem) => {
+      guestCart.items = guestCart.items.filter(
+        (cartItem: CartGuestItem) => cartItem.productId !== item.productId
+      );
+    });
+  }
+
+  // Save the updated (empty) cart
+  const updatedGuestCart: GuestCart = {
+    items: [],
+  };
+  saveGuestCart(updatedGuestCart);
 }
+
 export function saveGuestCart(cart: GuestCart) {
   const cookieStore = cookies();
   cookieStore.set("guest_cart", JSON.stringify(cart));

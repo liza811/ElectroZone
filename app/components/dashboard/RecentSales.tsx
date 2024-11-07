@@ -7,9 +7,12 @@ async function getData() {
     select: {
       amount: true,
       id: true,
+      guestName: true,
+      guestEmail: true,
       User: {
         select: {
           firstName: true,
+
           profileImage: true,
           email: true,
         },
@@ -35,22 +38,24 @@ export async function RecentSales() {
         {data.map((item) => (
           <div className="flex items-center gap-4" key={item.id}>
             <Avatar className="hidden sm:flex h-9 w-9">
-              <AvatarImage
-                src={item.User?.profileImage || ""}
-                alt="Avatar Image"
-              />
-              <AvatarFallback>
-                {item.User?.firstName.slice(0, 3)}
-              </AvatarFallback>
+              {item.User?.profileImage ? (
+                <AvatarImage src={item.User?.profileImage} alt="Avatar Image" />
+              ) : (
+                <AvatarFallback>
+                  {item.User?.firstName.slice(0, 3)}
+                </AvatarFallback>
+              )}
             </Avatar>
             <div className="grid gap-1">
-              <p className="text-sm font-medium">{item.User?.firstName}</p>
+              <p className="text-sm font-medium capitalize">
+                {item.User?.firstName || item.guestName?.toLowerCase()}
+              </p>
               <p className="text-sm text-muted-foreground">
-                {item.User?.email}
+                {item.User?.email || item.guestEmail}
               </p>
             </div>
             <p className="ml-auto font-medium">
-              +${new Intl.NumberFormat("en-US").format(item.amount / 100)}
+              {new Intl.NumberFormat("en-US").format(item.amount / 100)} AED
             </p>
           </div>
         ))}

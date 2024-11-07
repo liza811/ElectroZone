@@ -427,7 +427,7 @@ export async function checkOut() {
       const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] =
         cartWithQuantities.map((item) => ({
           price_data: {
-            currency: "usd",
+            currency: "aed",
             unit_amount: item.NewPrice ? item.NewPrice * 100 : item.price * 100,
             product_data: {
               name: item.name,
@@ -540,7 +540,7 @@ export async function buyNow(productId: string, quantity: number) {
       line_items: [
         {
           price_data: {
-            currency: "usd",
+            currency: "aed",
             unit_amount: product.NewPrice
               ? product.NewPrice * 100
               : product.price * 100,

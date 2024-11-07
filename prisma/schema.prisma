@@ -34,8 +34,8 @@ model Product {
   name        String
   description String
   status      ProductStatus
-  price       Int
-  NewPrice    Int?
+  price       Float
+  NewPrice      Float?
   quantity    Int           @default(1)
   images      String[]
 

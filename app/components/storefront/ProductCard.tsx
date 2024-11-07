@@ -24,7 +24,7 @@ interface iAppProps {
 
 export function ProductCard({ item }: iAppProps) {
   return (
-    <div className="rounded-md cursor-pointer bg-white overflow-hidden border p-3 h-full flex flex-col">
+    <div className="rounded-md  bg-white overflow-hidden border p-3 h-full flex flex-col">
       <div className="flex-1">
         <Carousel className="w-full mx-auto">
           <CarouselContent>
@@ -46,21 +46,21 @@ export function ProductCard({ item }: iAppProps) {
         </Carousel>
 
         <div className="flex justify-between gap-x-2  mt-4">
-          <h1 className="font-semibold text-xl line-clamp-1">{item.name}</h1>
+          <h1 className="font-semibold text-lg line-clamp-1">{item.name}</h1>
 
           {!!item.NewPrice ? (
-            <div className="h-fit flex flex-row-reverse gap-x-2 w-fit items-center gap-y-2 ">
+            <div className="h-fit flex flex-row-reverse gap-x-2 min-w-fit items-center gap-y-2 ">
               <h3 className="inline-flex items-center rounded-md bg-red-500/10 px-2 py-1 text-sm font-medium text-red-500 ring-1 ring-inset ring-red-500/10">
-                ${item.NewPrice}
+                {item.NewPrice} AED
               </h3>
               <p className="text-slate-600 text-sm line-through">
                 {" "}
-                ${item.price}
+                {item.price} AED
               </p>
             </div>
           ) : (
-            <h3 className="inline-flex items-center rounded-md bg-primary/10 px-2 py-1 text-sm font-medium text-primary ring-1 ring-inset ring-primary/10">
-              ${item.price}
+            <h3 className="inline-flex items-center min-w-fit rounded-md bg-primary/10 px-2 py-1 text-sm font-medium text-primary ring-1 ring-inset ring-primary/10">
+              {item.price} AED
             </h3>
           )}
         </div>

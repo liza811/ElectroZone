@@ -104,8 +104,8 @@ export default function ProductCreateRoute({ props }: { props: CatgoriesT }) {
                   key={fields.price.key}
                   name={fields.price.name}
                   defaultValue={fields.price.initialValue}
-                  type="number"
-                  placeholder="$55"
+                  step="any"
+                  placeholder="55AED"
                 />
                 <p className="text-red-500">{fields.price.errors}</p>
               </div>
@@ -116,7 +116,7 @@ export default function ProductCreateRoute({ props }: { props: CatgoriesT }) {
                   name={fields.quantity.name}
                   defaultValue={fields.quantity.initialValue}
                   type="number"
-                  placeholder="$55"
+                  placeholder="50"
                 />
                 <p className="text-red-500">{fields.quantity.errors}</p>
               </div>
@@ -137,8 +137,8 @@ export default function ProductCreateRoute({ props }: { props: CatgoriesT }) {
                   key={fields.newPrice.key}
                   name={fields.newPrice.name}
                   defaultValue={fields.newPrice.initialValue}
-                  type="number"
-                  placeholder="1"
+                  step="any"
+                  placeholder="20 AED"
                 />
                 <p className="text-red-500">{fields.newPrice.errors}</p>
               </div>

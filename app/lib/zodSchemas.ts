@@ -4,11 +4,19 @@ export const productSchema = z.object({
   name: z.string(),
   description: z.string(),
   status: z.enum(["published", "archived"]),
-  price: z.number().min(1),
+  price: z.number().refine((value) => value >= 1, {
+    message: "Price must be a number greater than or equal to 1",
+  }),
+
   images: z.array(z.string()).min(1, "At least one image is required"),
   category: z.string(),
   isFeatured: z.boolean().optional(),
-  newPrice: z.number().positive().optional(),
+  newPrice: z
+    .number()
+    .refine((value) => value >= 1, {
+      message: "Price must be a number greater than or equal to 1",
+    })
+    .optional(),
   quantity: z.number().min(1),
 });
 

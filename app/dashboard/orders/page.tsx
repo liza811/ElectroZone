@@ -96,14 +96,17 @@ export default async function OrdersPage() {
                   <TableCell>
                     <div className="space-y-2">
                       {item.orderItems.map((o) => (
-                        <div key={o.product.id} className="border-b py-2">
+                        <div
+                          key={o.product.id}
+                          className="border-b py-2  last:border-b-0"
+                        >
                           <p className="font-semibold text-sm">
                             {o.product.name}
                           </p>
                           <div className="flex justify-between text-sm text-muted-foreground">
                             <span>Quantity: {o.quantity}</span>
                             <span>
-                              Price: ${o.product.NewPrice || o.product.price}
+                              Price: {o.product.NewPrice || o.product.price} AED
                             </span>
                           </div>
                         </div>
@@ -147,7 +150,7 @@ export default async function OrdersPage() {
                   <TableCell className="text-right font-semibold text-gray-800">
                     {new Intl.NumberFormat("en-US", {
                       style: "currency",
-                      currency: "USD",
+                      currency: "AED",
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
                     }).format(item.amount / 100)}

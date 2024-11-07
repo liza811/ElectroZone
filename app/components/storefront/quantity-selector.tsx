@@ -9,11 +9,13 @@ import { BaggageClaim, Loader2, ShoppingBag } from "lucide-react";
 interface QuantitySelectorProps {
   productId: string;
   totalQuantity: number;
+  outOfStock: boolean;
 }
 
 export default function QuantitySelector({
   productId,
   totalQuantity,
+  outOfStock,
 }: QuantitySelectorProps) {
   const [quantity, setQuantity] = useState(1);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
@@ -79,7 +81,7 @@ export default function QuantitySelector({
           size="lg"
           className="w-[80%] mt-5"
           onClick={handleAddToCart}
-          disabled={isAddingToCart}
+          disabled={isAddingToCart || outOfStock}
         >
           {isAddingToCart ? (
             <>
@@ -97,7 +99,7 @@ export default function QuantitySelector({
           size="lg"
           className="w-[80%] mt-5"
           onClick={handleBuy}
-          disabled={isBuyingNow}
+          disabled={isBuyingNow || outOfStock}
         >
           {isBuyingNow ? (
             <>

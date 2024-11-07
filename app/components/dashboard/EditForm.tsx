@@ -125,8 +125,8 @@ export function EditForm({ data, categories }: editFormProps) {
                   key={fields.price.key}
                   name={fields.price.name}
                   defaultValue={data.price}
-                  type="number"
-                  placeholder="$55"
+                  step="any"
+                  placeholder="55 AED"
                 />
                 <p className="text-red-500">{fields.price.errors}</p>
               </div>
@@ -158,8 +158,8 @@ export function EditForm({ data, categories }: editFormProps) {
                   key={fields.newPrice.key}
                   name={fields.newPrice.name}
                   defaultValue={data.NewPrice || ""}
-                  type="number"
-                  placeholder="$55"
+                  step="any"
+                  placeholder="20 AED"
                 />
                 <p className="text-red-500">{fields.newPrice.errors}</p>
               </div>
