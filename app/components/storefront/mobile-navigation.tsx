@@ -30,7 +30,7 @@ export const MobileNav = ({
   return (
     <Sheet>
       <SheetTrigger className="md:hidden  pr-4 transition hover:opacity-75">
-        <Menu />
+        <Menu className="size-8" />
       </SheetTrigger>
       <SheetContent side={"right"} className="p-0 bg-neutral-100 border-none">
         <nav
@@ -69,23 +69,20 @@ export const MobileNav = ({
                 Dashboard
               </Link>
             )}
-            {/* {user ? (
-              <UserDropdown
-                email={user.email as string}
-                name={user.given_name as string}
-                userImage={user.picture}
-              />
+            {user ? (
+              // <UserDropdown
+              //   email={user.email as string}
+              //   name={user.given_name as string}
+              //   userImage={user.picture}
+              // />
+              ""
             ) : (
-              <Button
-                variant="ghost"
-                asChild
-                className="hover:bg-transparent text-[15px]  font-[600] hover:text-primary flex justify-start text-black"
-              >
-                <LoginLink className="hover:bg-transparent ml-4 font-[600] hover:text-primary">
+              <LoginLink>
+                <span className="relative transition-all  group pt-2 ml-2 hover:bg-transparent font-[600] hover:text-primary text-[16px]">
                   Sign in
-                </LoginLink>
-              </Button>
-            )} */}
+                </span>
+              </LoginLink>
+            )}
           </div>
           {/* <div className=" items-center text-gray-700 gap-x-2 -mt-5">
             {!user && (

@@ -1,7 +1,9 @@
+import { clearCart } from "@/app/actions";
 import prisma from "@/app/lib/db";
 
 import { stripe } from "@/app/lib/stripe";
-import { clearCart } from "@/lib/cart";
+import { deleteGuestCartItem } from "@/lib/cart";
+
 import { cookies, headers } from "next/headers";
 
 export async function POST(req: Request) {
@@ -80,27 +82,7 @@ export async function POST(req: Request) {
           },
         });
       } else {
-        const cookieStore = cookies();
-        const guestCartCookie = cookieStore.get("guest_cart");
-
-        if (guestCartCookie) {
-          // Parse the current cart from the cookie
-          let guestCart = JSON.parse(guestCartCookie.value);
-
-          if (guestCart.items && guestCart.items.length > 0) {
-            // Remove the first item from the cart
-            guestCart.items.shift();
-          }
-
-          // Save the updated cart back to the cookie
-          cookieStore.set("guest_cart", JSON.stringify(guestCart), {
-            path: "/",
-          });
-
-          console.log("Updated Cart:", guestCart);
-        } else {
-          console.log("No cart found in cookies.");
-        }
+        deleteGuestCartItem("4075c0c3-f8bc-4c2d-8517-3f70e7c4eaad");
       }
       break;
     }

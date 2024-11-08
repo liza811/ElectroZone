@@ -37,6 +37,7 @@ export default async function BagRoute() {
         const productPrice = item.NewPrice || item.price;
         totalPrice += (productPrice || 0) * item.quantity;
       });
+      guestCart.items.map((item) => console.log(item));
       return (
         <div className="flex flex-col gap-y-10 max-w-2xl mx-auto mt-10 min-h-[55vh]">
           {cartWithQuantities?.map((item) => (

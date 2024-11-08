@@ -22,7 +22,7 @@ export default function QuantitySelector({
   const [isBuyingNow, setIsBuyingNow] = useState(false);
   const [, startTransition] = useTransition();
 
-  const disabledPlus = quantity === totalQuantity;
+  const disabledPlus = quantity === totalQuantity || totalQuantity == 0;
   const disabledMinus = quantity === 1;
 
   const handleQuantityChange = (delta: number) => {

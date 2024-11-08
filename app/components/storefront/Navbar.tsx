@@ -36,14 +36,14 @@ export async function Navbar() {
       <div className="flex items-center ">
         <Link
           href="/"
-          className="md:w-[180px] md:h-[180px] w-[120px] h-[120px] flex"
+          className="md:w-[180px] md:h-[180px] w-[120px] h-[120px] flex -ml-3"
         >
           <Image
             src={"/logo.png"}
             alt={"Logo"}
             width={200}
             height={200}
-            className="object-contain md:scale-[1.12] scale-[1.5]"
+            className="object-contain md:scale-[1.12] scale-[1.6]"
           />
         </Link>
         <NavbarLinks />
@@ -78,14 +78,14 @@ export async function Navbar() {
             userImage={user.picture}
           />
         ) : (
-          <div className="flex md:flex-1 md:items-center md:justify-end ">
-            <Button variant="ghost" asChild className="">
+          <div className="flex md:items-center md:justify-end ">
+            <Button variant="ghost" asChild className="hidden md:flex">
               <LoginLink className="hover:bg-slate-300/50 underline text-base">
                 Sign in
               </LoginLink>
             </Button>
 
-            <Button variant="ghost" asChild className="hidden md:flex">
+            <Button variant="ghost" asChild className="hidden lg:flex">
               <RegisterLink className="hover:bg-slate-300/50">
                 Create Account
               </RegisterLink>

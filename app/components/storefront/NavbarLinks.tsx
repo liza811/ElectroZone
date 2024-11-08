@@ -20,13 +20,13 @@ export const navbarLinks = [
 export function NavbarLinks() {
   const location = usePathname();
   return (
-    <div className="hidden md:flex justify-center items-center gap-x-2 ">
+    <div className="hidden md:flex justify-center items-center gap-x-2 -ml-5 lg:-ml-0 min-w-fit">
       {navbarLinks.map((item) => (
         <Link
           href={item.href}
           key={item.id}
           className={cn(
-            "relative transition-all group p-2 font-[600] hover:text-primary",
+            "relative transition-all group p-2 font-[600] hover:text-primary text-nowrap",
             location === item.href ? "text-primary" : ""
           )}
         >

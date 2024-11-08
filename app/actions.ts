@@ -9,7 +9,7 @@ import prisma from "./lib/db";
 import { revalidatePath } from "next/cache";
 import { stripe } from "./lib/stripe";
 import Stripe from "stripe";
-import { GuestCart } from "./lib/interfaces";
+import { CartGuestItem, GuestCart } from "./lib/interfaces";
 import { cookies } from "next/headers";
 import {
   deleteGuestCartItem,
@@ -463,6 +463,7 @@ export async function checkOut() {
         },
         //customer_email: user.email,
       });
+      clearCart();
       return redirect(session.url as string);
     }
   }
@@ -590,3 +591,22 @@ export const searchProducts = async (query: string) => {
   });
   return products;
 };
+
+export async function clearCart() {
+  const guestCart = getGuestCartt();
+
+  if (guestCart?.items) {
+    // Iterate over each item and remove it
+    guestCart.items.forEach((item: CartGuestItem) => {
+      guestCart.items = guestCart.items.filter(
+        (cartItem: CartGuestItem) => cartItem.productId !== item.productId
+      );
+    });
+  }
+
+  // Save the updated (empty) cart
+  const updatedGuestCart: GuestCart = {
+    items: [],
+  };
+  saveGuestCart(updatedGuestCart);
+}

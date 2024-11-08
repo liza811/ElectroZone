@@ -11,7 +11,7 @@ import { fetchAllCategories } from "@/lib/categories";
 import Image from "next/image";
 import Link from "next/link";
 import SearchBar from "./serach";
-import { ArrowDown, ChevronDown } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 
 export async function CategoriesNavigation() {
   const categories = await fetchAllCategories();
@@ -19,10 +19,10 @@ export async function CategoriesNavigation() {
     <section className="flex flex-row-reverse items-center md:ml-2 bg-gray-300 border rounded-md max-h-10 w-fit ">
       <SearchBar />
       <DropdownMenu>
-        <DropdownMenuTrigger asChild>
+        <DropdownMenuTrigger asChild className="-pl-5 hidden md:flex">
           <Button
             variant="outline"
-            className="relative h-10 flex gap-x-2 items-center border-none transition-all group md:p-2 mt-1 md:mt-0 -ml-5  font-[500] hover:text-primary bg-none bg-transparent hover:bg-transparent text-sm md:ml-3 focus-visible:ring-0 focus:ring-0 focus-visible:ring-offset-0"
+            className="relative h-10 flex gap-x-2 items-center border-none transition-all group md:p-2 mt-1 md:mt-0   font-[500] hover:text-primary bg-none bg-transparent hover:bg-transparent text-sm md:ml-3 focus-visible:ring-0 focus:ring-0 focus-visible:ring-offset-0"
           >
             All categories
             <ChevronDown className="size-4" />
