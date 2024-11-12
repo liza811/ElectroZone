@@ -14,6 +14,7 @@ import { cn } from "@/lib/utils";
 import { MobileNav } from "./mobile-navigation";
 import { getCart, getGuestCartt } from "@/lib/cart";
 import Image from "next/image";
+import { SearchMobile } from "./search-mobile";
 
 export async function Navbar() {
   const { getUser, getPermission } = getKindeServerSession();
@@ -50,7 +51,7 @@ export async function Navbar() {
         <CategoriesNavigation />
       </div>
 
-      <div className=" items-center text-gray-700  gap-x-4 flex lg:pr-7">
+      <div className=" items-center text-gray-700  gap-x-4 flex lg:pr-7 ml-auto">
         {isAdmin && (
           <Link
             href={`/dashboard`}
@@ -77,6 +78,7 @@ export async function Navbar() {
         >
           <Heart className="size-6 group-hover:text-gray-500" />
         </Link>
+        <SearchMobile />
         {user ? (
           <UserDropdown
             email={user.email as string}

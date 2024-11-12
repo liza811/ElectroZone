@@ -10,8 +10,9 @@ import {
 import { fetchAllCategories } from "@/lib/categories";
 import Image from "next/image";
 import Link from "next/link";
-import SearchBar from "./serach";
+
 import { ChevronDown } from "lucide-react";
+import { SearchBar } from "./serach";
 
 export async function CategoriesNavigation() {
   const categories = await fetchAllCategories();
