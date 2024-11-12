@@ -4,8 +4,9 @@ import { Suspense } from "react";
 import { unstable_noStore as noStore } from "next/cache";
 
 import Link from "next/link";
+import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 
-async function getData() {
+async function getData(userId: string | undefined) {
   const data = await prisma.product.findMany({
     where: {
       status: "published",
@@ -28,6 +29,14 @@ async function getData() {
       price: true,
       NewPrice: true,
       quantity: true,
+      Like: {
+        where: {
+          userId: userId,
+        },
+        select: {
+          id: true,
+        },
+      },
     },
     orderBy: {
       createdAt: "desc",
@@ -38,7 +47,11 @@ async function getData() {
   return data;
 }
 
-export function FeaturedProducts() {
+export async function FeaturedProducts({
+  userId,
+}: {
+  userId: string | undefined;
+}) {
   return (
     <>
       <div className="flex items-center justify-between">
@@ -53,20 +66,29 @@ export function FeaturedProducts() {
         </Link>
       </div>
       <Suspense fallback={<LoadingRows />}>
-        <LoadFeaturedproducts />
+        <LoadFeaturedproducts userId={userId} />
       </Suspense>
     </>
   );
 }
 
-async function LoadFeaturedproducts() {
+async function LoadFeaturedproducts({
+  userId,
+}: {
+  userId: string | undefined;
+}) {
   noStore();
-  const data = await getData();
+
+  const data = await getData(userId);
 
   return (
     <div className="mt-5 grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
       {data.map((item) => (
-        <ProductCard key={item.id} item={item} />
+        <ProductCard
+          item={item}
+          key={item.id}
+          isGuest={userId ? false : true}
+        />
       ))}
     </div>
   );

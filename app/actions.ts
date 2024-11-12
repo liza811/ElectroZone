@@ -16,6 +16,7 @@ import {
   getCart,
   getGuestCartt,
   getProductsFromGuestCart,
+  removeFromGuestWishlist,
   saveGuestCart,
 } from "@/lib/cart";
 
@@ -609,4 +610,80 @@ export async function clearCart() {
     items: [],
   };
   saveGuestCart(updatedGuestCart);
+}
+
+export const toggleLike = async (
+  productId: string,
+
+  liked: boolean
+) => {
+  const { getUser } = getKindeServerSession();
+  const user = await getUser();
+
+  if (!user) {
+    return redirect("/");
+  }
+  console.log(liked);
+  try {
+    if (liked) {
+      await prisma.like.create({
+        data: {
+          productId,
+          userId: user.id,
+        },
+      });
+    } else {
+      await prisma.like.deleteMany({
+        where: {
+          productId,
+          userId: user.id,
+        },
+      });
+    }
+  } catch (error) {
+    console.error("Error updating like status:", error);
+  }
+};
+
+export async function getUserLikeStatus(
+  productId: string,
+  userId: string | undefined
+) {
+  const liked = await prisma.like.findFirst({
+    where: {
+      productId,
+      userId,
+    },
+  });
+
+  return liked ? true : false;
+}
+
+export async function delWhisListItem(formData: FormData) {
+  const { getUser } = getKindeServerSession();
+  const user = await getUser();
+
+  if (!user) {
+    const productId = formData.get("itemCartId") as string;
+    if (productId) {
+      removeFromGuestWishlist(productId);
+      revalidatePath("/whishlist");
+    }
+    return;
+  }
+
+  const itemCartId = formData.get("itemCartId");
+
+  if (!itemCartId) {
+    return { message: "Item not found in whishlist." };
+  }
+  console.log(itemCartId);
+  // Remove the item from the cart
+  await prisma.like.delete({
+    where: {
+      id: Number(itemCartId),
+    },
+  });
+  revalidatePath("/whishlist");
+  return { message: "Item removed from whishlist." };
 }

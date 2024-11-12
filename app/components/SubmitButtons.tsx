@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Loader2, ShoppingBag } from "lucide-react";
+import { Loader2, ShoppingBag, Trash2Icon } from "lucide-react";
 import { useFormStatus } from "react-dom";
 
 interface buttonProps {
@@ -71,6 +71,31 @@ export function DeleteItem() {
   );
 }
 
+export function RemoveItem() {
+  const { pending } = useFormStatus();
+
+  return (
+    <>
+      {pending ? (
+        <button
+          disabled
+          className="font-medium text-red-500 text-end"
+          title="remove"
+        >
+          <Loader2 className="mr-4 h-5 w-5 animate-spin" />
+        </button>
+      ) : (
+        <button
+          type="submit"
+          className="font-medium text-red-500 text-end"
+          title="remove"
+        >
+          <Trash2Icon />
+        </button>
+      )}
+    </>
+  );
+}
 export function ChceckoutButton() {
   const { pending } = useFormStatus();
   return (

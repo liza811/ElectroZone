@@ -2,6 +2,7 @@ import { ProductCard } from "@/app/components/storefront/ProductCard";
 import prisma from "@/app/lib/db";
 import { notFound } from "next/navigation";
 import { unstable_noStore as noStore } from "next/cache";
+import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 interface SearchParams {
   query?: string;
 }
@@ -15,12 +16,31 @@ export default async function SearchPage({
   if (!query) {
     return notFound();
   }
-  noStore();
+  const { getUser } = getKindeServerSession();
+  const user = await getUser();
+
   const products = await prisma.product.findMany({
     where: {
       name: {
         contains: query,
         mode: "insensitive",
+      },
+    },
+    select: {
+      name: true,
+      images: true,
+      price: true,
+      id: true,
+      description: true,
+      NewPrice: true,
+      quantity: true,
+      Like: {
+        where: {
+          userId: user?.id,
+        },
+        select: {
+          id: true,
+        },
       },
     },
   });
@@ -32,7 +52,11 @@ export default async function SearchPage({
       {products.length > 0 ? (
         <div className=" grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 py-6">
           {products.map((product) => (
-            <ProductCard item={product} key={product.id} />
+            <ProductCard
+              item={product}
+              key={product.id}
+              isGuest={user ? false : true}
+            />
           ))}
         </div>
       ) : (

@@ -2,12 +2,17 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { LoadingCatgoryRows } from "./other-products";
 import { ProductCard } from "./ProductCard";
-
+interface Like {
+  id: number;
+}
 interface iAppProps {
+  isGuest: boolean;
+
   item: {
     id: string;
     name: string;
     products: {
+      Like: Like[];
       id: string;
       name: string;
       description: string;
@@ -18,7 +23,7 @@ interface iAppProps {
     }[];
   };
 }
-export const CategoryItem = ({ item }: iAppProps) => {
+export const CategoryItem = ({ item, isGuest }: iAppProps) => {
   return (
     <section className="my-10">
       <div className="flex items-center justify-between">
@@ -35,7 +40,7 @@ export const CategoryItem = ({ item }: iAppProps) => {
       <Suspense fallback={<LoadingCatgoryRows />}>
         <div className="mt-5 grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
           {item.products.map((item) => (
-            <ProductCard key={item.id} item={item} />
+            <ProductCard key={item.id} item={item} isGuest={isGuest} />
           ))}
         </div>
       </Suspense>

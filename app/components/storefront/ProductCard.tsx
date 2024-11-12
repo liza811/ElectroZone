@@ -9,8 +9,13 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import Image from "next/image";
 import Link from "next/link";
-
+import { LikeButton } from "./like-button";
+interface Like {
+  id: number;
+}
 interface iAppProps {
+  isGuest: boolean;
+
   item: {
     id: string;
     name: string;
@@ -19,24 +24,33 @@ interface iAppProps {
     images: string[];
     NewPrice: number | null;
     quantity: number;
+    Like: Like[];
   };
 }
 
-export function ProductCard({ item }: iAppProps) {
+export function ProductCard({ item, isGuest }: iAppProps) {
   return (
     <div className="rounded-md  bg-white overflow-hidden border p-3 h-full flex flex-col">
       <div className="flex-1">
         <Carousel className="w-full mx-auto">
           <CarouselContent>
-            {item.images.map((item, index) => (
+            {item.images.map((itemm, index) => (
               <CarouselItem key={index}>
                 <div className="aspect-square min-h-[200px] rounded-md bg-gray-100 relative">
                   <Image
-                    src={item}
+                    src={itemm}
                     alt="Product Image"
                     fill
                     className="object-cover rounded-sm"
                   />
+
+                  <div className="absolute top-2 right-2">
+                    <LikeButton
+                      productId={item.id}
+                      isGuest={isGuest}
+                      liked={item.Like?.length > 0 ? true : false}
+                    />
+                  </div>
                 </div>
               </CarouselItem>
             ))}

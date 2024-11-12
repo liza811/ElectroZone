@@ -5,13 +5,21 @@ import { unstable_noStore as noStore } from "next/cache";
 
 import { CategoryItem } from "./category-item";
 
-async function getData() {
+async function getData(userId: string | undefined) {
   const data = await prisma.category.findMany({
     select: {
       name: true,
       id: true,
       products: {
         select: {
+          Like: {
+            where: {
+              userId: userId,
+            },
+            select: {
+              id: true,
+            },
+          },
           price: true,
           images: true,
           description: true,
@@ -28,25 +36,31 @@ async function getData() {
   return data;
 }
 
-export function OtherProducts() {
+export function OtherProducts({ userId }: { userId: string | undefined }) {
   return (
     <>
       <Suspense fallback={<LoadingCatgoryRows />}>
-        <LoadCategories />
+        <LoadCategories userId={userId} />
       </Suspense>
     </>
   );
 }
 
-async function LoadCategories() {
+async function LoadCategories({ userId }: { userId: string | undefined }) {
   noStore();
-  const data = await getData();
+  const data = await getData(userId);
 
   return (
     <div className="mt-5 w-full">
       {data.map(
         (item) =>
-          item.products.length > 0 && <CategoryItem key={item.id} item={item} />
+          item.products.length > 0 && (
+            <CategoryItem
+              key={item.id}
+              item={item}
+              isGuest={userId ? false : true}
+            />
+          )
       )}
     </div>
   );

@@ -25,16 +25,9 @@ export default function SearchBar() {
         type="text"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
-        placeholder="Search for products..."
-        className="border px-4 h-full py-[8.5px] md:rounded-none rounded-tr-none rounded-br-none bg-slate-50 focus-visible:ring-0 focus:ring-0 focus:border-none"
+        placeholder="Search your products..."
+        className="border px-4 h-full py-[8.5px]  rounded-tl-none rounded-bl-none bg-neutral-100 focus-visible:ring-0 focus:ring-0 focus:border-none"
       />
-      <button
-        type="submit"
-        title="search"
-        className=" px-4  py-[9px] flex items-center justify-center rounded-tr-md bg-primary text-white h-full rounded-br-md "
-      >
-        <Search className="w-5 h-5" />
-      </button>
     </form>
   );
 }

@@ -45,7 +45,10 @@ export const fetchAllCategories = async () => {
 
 //   return data;
 // }
-export async function getProductsByCategory(categoryId: string) {
+export async function getProductsByCategory(
+  categoryId: string,
+  userId: string | undefined
+) {
   const data = await prisma.category.findUnique({
     where: {
       id: categoryId,
@@ -55,6 +58,14 @@ export async function getProductsByCategory(categoryId: string) {
       name: true,
       products: {
         select: {
+          Like: {
+            where: {
+              userId: userId,
+            },
+            select: {
+              id: true,
+            },
+          },
           price: true,
           images: true,
           description: true,

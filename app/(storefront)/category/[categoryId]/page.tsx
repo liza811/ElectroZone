@@ -1,9 +1,12 @@
 import { ProductCard } from "@/app/components/storefront/ProductCard";
 import { getProductsByCategory } from "@/lib/categories";
+import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import Image from "next/image";
 
 const CatgoryPage = async ({ params }: { params: { categoryId: string } }) => {
-  const products = await getProductsByCategory(params.categoryId);
+  const { getUser } = getKindeServerSession();
+  const user = await getUser();
+  const products = await getProductsByCategory(params.categoryId, user?.id);
 
   const dataProducts = products?.products.map((product) => ({
     id: product.id,
@@ -13,6 +16,7 @@ const CatgoryPage = async ({ params }: { params: { categoryId: string } }) => {
     images: product.images,
     NewPrice: product.NewPrice,
     quantity: product.quantity,
+    Like: product.Like,
   }));
 
   return (
@@ -45,7 +49,11 @@ const CatgoryPage = async ({ params }: { params: { categoryId: string } }) => {
           ) : (
             <>
               {dataProducts?.map((item) => (
-                <ProductCard key={item.id} item={item} />
+                <ProductCard
+                  key={item.id}
+                  item={item}
+                  isGuest={user ? false : true}
+                />
               ))}
             </>
           )}

@@ -27,6 +27,9 @@ role      Role     @default(USER)
 
   createdAt DateTime @default(now())
     cart  Cart?
+
+
+  Like Like[]
 }
 
 model Product {
@@ -50,8 +53,20 @@ model Product {
   OrderItem OrderItem[]
 
   CartItem CartItem[]
-}
 
+
+  Like Like[]
+}
+model Like {
+  id        Int     @id @default(autoincrement())
+  userId    String
+  productId String
+  user      User    @relation(fields: [userId], references: [id])
+  product   Product @relation(fields: [productId], references: [id])
+
+  @@unique([userId, productId]) 
+   @@index([userId, productId])
+}
 model Banner {
   id          String @id @default(uuid())
   title       String

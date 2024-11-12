@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { NavbarLinks } from "./NavbarLinks";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
-import { ShoppingBagIcon } from "lucide-react";
+import { Heart, ShoppingBagIcon, ShoppingCart, User } from "lucide-react";
 import { UserDropdown } from "./UserDropdown";
 import { Button } from "@/components/ui/button";
 import {
@@ -50,7 +50,7 @@ export async function Navbar() {
         <CategoriesNavigation />
       </div>
 
-      <div className=" items-center text-gray-700 gap-x-2 flex md:pr-7">
+      <div className=" items-center text-gray-700  gap-x-4 flex lg:pr-7">
         {isAdmin && (
           <Link
             href={`/dashboard`}
@@ -64,12 +64,18 @@ export async function Navbar() {
 
         <Link
           href="/bag"
-          className="group p-2  items-center mr-2 text-gray-700 relative  hidden md:flex "
+          className="group  items-center  text-gray-700 relative  hidden md:flex "
         >
-          <ShoppingBagIcon className="h-6 w-6  group-hover:text-gray-500" />
-          <span className="left-8 text-sm font-medium absolute text-gray-800 group-hover:text-gray-800 -top-1  ">
+          <ShoppingCart className="size-6 group-hover:text-gray-500" />
+          <span className="left-6 text-sm font-medium absolute text-gray-800 group-hover:text-gray-800 -top-2  ">
             {total}
           </span>
+        </Link>
+        <Link
+          href="/whishlist"
+          className="group  items-center  text-gray-700 -mr-3 hidden md:flex "
+        >
+          <Heart className="size-6 group-hover:text-gray-500" />
         </Link>
         {user ? (
           <UserDropdown
@@ -79,16 +85,15 @@ export async function Navbar() {
           />
         ) : (
           <div className="flex md:items-center md:justify-end ">
-            <Button variant="ghost" asChild className="hidden md:flex">
-              <LoginLink className="hover:bg-slate-300/50 underline text-base">
-                Sign in
+            <Button
+              variant="ghost"
+              size={"icon"}
+              asChild
+              className=" p-0 bg-transparent m-0 "
+            >
+              <LoginLink className="hover:bg-slate-300/50  ">
+                <User className="size-6 " />
               </LoginLink>
-            </Button>
-
-            <Button variant="ghost" asChild className="hidden lg:flex">
-              <RegisterLink className="hover:bg-slate-300/50">
-                Create Account
-              </RegisterLink>
             </Button>
           </div>
         )}
