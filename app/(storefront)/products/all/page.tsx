@@ -30,14 +30,11 @@ async function getData(userId: string | undefined) {
   return data;
 }
 
-export default async function CategoriesPage({
-  userId,
-}: {
-  userId: string | undefined;
-}) {
+export default async function CategoriesPage() {
   noStore();
-
-  const data = await getData(userId);
+  const { getUser } = getKindeServerSession();
+  const user = await getUser();
+  const data = await getData(user?.id);
   return (
     <section>
       <h1 className="font-semibold text-3xl my-5 capitalize">
@@ -48,7 +45,7 @@ export default async function CategoriesPage({
           <ProductCard
             item={item}
             key={item.id}
-            isGuest={userId ? false : true}
+            isGuest={user ? false : true}
           />
         ))}
       </div>

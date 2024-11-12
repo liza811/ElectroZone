@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import { unstable_noStore as noStore } from "next/cache";
 
 import Link from "next/link";
+import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 
 async function getCategory(productId: string) {
   const categoryId = await prisma.product.findUnique({
@@ -16,7 +17,11 @@ async function getCategory(productId: string) {
   });
   return categoryId?.categoryId;
 }
-async function getData(productId: string, catId: string | null | undefined) {
+async function getData(
+  productId: string,
+  catId: string | null | undefined,
+  userId: string | undefined
+) {
   if (!catId) {
     return null;
   }
@@ -29,6 +34,14 @@ async function getData(productId: string, catId: string | null | undefined) {
       },
     },
     select: {
+      Like: {
+        where: {
+          userId: userId,
+        },
+        select: {
+          id: true,
+        },
+      },
       id: true,
       name: true,
       description: true,
@@ -47,10 +60,12 @@ async function getData(productId: string, catId: string | null | undefined) {
 }
 
 export async function RelatedProducts({ productId }: { productId: string }) {
+  const { getUser } = getKindeServerSession();
+  const user = await getUser();
   noStore();
 
   const catId = await getCategory(productId);
-  const data = await getData(productId, catId);
+  const data = await getData(productId, catId, user?.id);
   return (
     <>
       <Suspense fallback={<LoadingRows />}>
@@ -70,7 +85,11 @@ export async function RelatedProducts({ productId }: { productId: string }) {
 
             <div className="mt-5 grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
               {data?.map((item) => (
-                <ProductCard key={item.id} item={item} />
+                <ProductCard
+                  key={item.id}
+                  item={item}
+                  isGuest={user ? false : true}
+                />
               ))}
             </div>
           </>

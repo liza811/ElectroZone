@@ -1,6 +1,7 @@
 import prisma from "@/app/lib/db";
+import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 
-export async function getAllFeaturedProducts() {
+export async function getAllFeaturedProducts(userId: string | undefined) {
   const data = await prisma.product.findMany({
     where: {
       status: "published",
@@ -16,6 +17,14 @@ export async function getAllFeaturedProducts() {
       ],
     },
     select: {
+      Like: {
+        where: {
+          userId: userId,
+        },
+        select: {
+          id: true,
+        },
+      },
       id: true,
       name: true,
       description: true,
