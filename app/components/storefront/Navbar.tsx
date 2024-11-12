@@ -15,11 +15,12 @@ import { MobileNav } from "./mobile-navigation";
 import { getCart, getGuestCartt } from "@/lib/cart";
 import Image from "next/image";
 import { SearchMobile } from "./search-mobile";
+import { fetchAllCategories } from "@/lib/categories";
 
 export async function Navbar() {
   const { getUser, getPermission } = getKindeServerSession();
   const user = await getUser();
-
+  const categories = await fetchAllCategories();
   const permission = await getPermission("dashboard");
 
   const isAdmin = permission?.isGranted ? true : false;
@@ -74,11 +75,12 @@ export async function Navbar() {
         </Link>
         <Link
           href="/whishlist"
-          className="group  items-center  text-gray-700 -mr-3 hidden md:flex "
+          className="group  items-center  text-gray-700 md:-mr-3 flex "
         >
           <Heart className="size-6 group-hover:text-gray-500" />
         </Link>
-        <SearchMobile />
+
+        <SearchMobile categories={categories} />
         {user ? (
           <UserDropdown
             email={user.email as string}
