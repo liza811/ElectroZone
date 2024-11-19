@@ -172,7 +172,25 @@ export async function getProductsFromGuestCart(guestCart: GuestCart) {
 
   return products;
 }
+export async function getProductsFromGuestCart2(guestCart: GuestCart) {
+  const productIds = guestCart.items.map((item) => item.productId);
 
+  const products = await prisma.product.findMany({
+    where: {
+      id: {
+        in: productIds,
+      },
+    },
+    select: {
+      id: true,
+
+      price: true,
+      NewPrice: true,
+    },
+  });
+
+  return products;
+}
 export async function getProductsFromGuestWhishList(guestCart: GuestWishlist) {
   const productIds = guestCart.map((item) => item.productId);
 

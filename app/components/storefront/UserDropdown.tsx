@@ -23,7 +23,7 @@ export function UserDropdown({ email, name, userImage }: iAppProps) {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
-          className="relative h-10 w-10 rounded-full ml-1  text-white -mr-5 md:-mr-0"
+          className="relative size-7 md:size-10 rounded-full mr-2  text-white  "
           variant={"outline"}
         >
           {userImage !== null ? (

@@ -3,7 +3,7 @@
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { redirect } from "next/navigation";
 import { parseWithZod } from "@conform-to/zod";
-import { bannerSchema, productSchema } from "./lib/zodSchemas";
+import { bannerSchema, deliverySchema, productSchema } from "./lib/zodSchemas";
 import prisma from "./lib/db";
 
 import { revalidatePath } from "next/cache";
@@ -59,7 +59,47 @@ export async function createProduct(prevState: unknown, formData: FormData) {
 
   redirect("/dashboard/products");
 }
+export async function addOrder(prevState: unknown, formData: FormData) {
+  console.log("Action triggered");
+  console.log("Form Data:", formData);
+  const { getUser, getPermission } = getKindeServerSession();
+  const user = await getUser();
+  const permission = await getPermission("dashboard");
+  const total = formData.get("total") as string;
+  const products = JSON.parse(formData.get("products") as string);
+  console.log("Total:", formData.get("total"));
+  console.log("Products:", formData.get("products"));
+  const isAdmin = permission?.isGranted ? true : false;
+  if (!user || !isAdmin) {
+    return redirect("/");
+  }
 
+  const submission = parseWithZod(formData, {
+    schema: deliverySchema,
+  });
+
+  if (submission.status !== "success") {
+    return submission.reply();
+  }
+
+  await prisma.order.create({
+    data: {
+      amount: Number(total),
+      guestName: submission.value.name,
+
+      billingAddressLine1: `${submission.value.Country} ${submission.value.City}`,
+      guestEmail: submission.value.email,
+      orderItems: {
+        create: products.map((item: { id: String; quantity: number }) => ({
+          productId: item.id,
+          quantity: item.quantity,
+        })),
+      },
+    },
+  });
+
+  redirect("/");
+}
 export async function editProduct(prevState: any, formData: FormData) {
   const { getUser } = getKindeServerSession();
   const user = await getUser();
@@ -408,117 +448,124 @@ export async function delItem(formData: FormData) {
   return { message: "Item removed from cart." };
 }
 
-export async function checkOut() {
-  const { getUser } = getKindeServerSession();
-  const user = await getUser();
+export async function checkOut(formData: FormData) {
+  const selectedOption = formData.get("paymentOption");
+  if (selectedOption === "option-one") {
+    return redirect("/checkout");
+  } else {
+    const { getUser } = getKindeServerSession();
+    const user = await getUser();
 
-  if (!user) {
-    let guestcart: GuestCart = await getGuestCartt();
-    const products = await getProductsFromGuestCart(guestcart);
-    const cartWithQuantities = products?.map((product) => {
-      const cartItem = guestcart.items.find(
-        (item) => item.productId === product.id
-      );
-      return {
-        ...product,
-        quantity: cartItem?.quantity || 1,
-      };
-    });
-    if (guestcart && guestcart.items) {
-      const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] =
-        cartWithQuantities.map((item) => ({
-          price_data: {
-            currency: "aed",
-            unit_amount: item.NewPrice ? item.NewPrice * 100 : item.price * 100,
-            product_data: {
-              name: item.name,
-              images: [item.images[0]],
+    if (!user) {
+      let guestcart: GuestCart = await getGuestCartt();
+      const products = await getProductsFromGuestCart(guestcart);
+      const cartWithQuantities = products?.map((product) => {
+        const cartItem = guestcart.items.find(
+          (item) => item.productId === product.id
+        );
+        return {
+          ...product,
+          quantity: cartItem?.quantity || 1,
+        };
+      });
+      if (guestcart && guestcart.items) {
+        const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] =
+          cartWithQuantities.map((item) => ({
+            price_data: {
+              currency: "aed",
+              unit_amount: item.NewPrice
+                ? item.NewPrice * 100
+                : item.price * 100,
+              product_data: {
+                name: item.name,
+                images: [item.images[0]],
+              },
             },
-          },
+            quantity: item.quantity,
+          }));
+        const cartItemsSimple = guestcart.items.map((item) => ({
+          id: item.productId,
           quantity: item.quantity,
         }));
-      const cartItemsSimple = guestcart.items.map((item) => ({
-        id: item.productId,
-        quantity: item.quantity,
-      }));
-      const session = await stripe.checkout.sessions.create({
-        mode: "payment",
-        line_items: lineItems,
-        // Specify the payment method type
-        billing_address_collection: "required",
+        const session = await stripe.checkout.sessions.create({
+          mode: "payment",
+          line_items: lineItems,
+          // Specify the payment method type
+          billing_address_collection: "required",
 
-        success_url:
-          process.env.NODE_ENV === "development"
-            ? `${process.env.KINDE_SITE_URL}/payment/success`
-            : `${process.env.DEPLOYMENT_URL}/payment/success`,
-        cancel_url:
-          process.env.NODE_ENV === "development"
-            ? `${process.env.KINDE_SITE_URL}/payment/cancel`
-            : `${process.env.DEPLOYMENT_URL}/payment/cancel`,
+          success_url:
+            process.env.NODE_ENV === "development"
+              ? `${process.env.KINDE_SITE_URL}/payment/success`
+              : `${process.env.DEPLOYMENT_URL}/payment/success`,
+          cancel_url:
+            process.env.NODE_ENV === "development"
+              ? `${process.env.KINDE_SITE_URL}/payment/cancel`
+              : `${process.env.DEPLOYMENT_URL}/payment/cancel`,
 
-        metadata: {
-          cartItems: JSON.stringify(cartItemsSimple),
-        },
-        phone_number_collection: {
-          enabled: true,
-        },
-        //customer_email: user.email,
-      });
-      clearCart();
-      return redirect(session.url as string);
+          metadata: {
+            cartItems: JSON.stringify(cartItemsSimple),
+          },
+          phone_number_collection: {
+            enabled: true,
+          },
+          //customer_email: user.email,
+        });
+        clearCart();
+        return redirect(session.url as string);
+      }
     }
-  }
-  // let cart: Cart | null = await redis.get(`cart-${user.id}`);
+    // let cart: Cart | null = await redis.get(`cart-${user.id}`);
 
-  if (user) {
-    let cart = await getCart();
-    if (cart && cart.items) {
-      const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] =
-        cart.items.map((item) => ({
-          price_data: {
-            currency: "usd",
-            unit_amount: item.product.NewPrice
-              ? item.product.NewPrice * 100
-              : item.product.price * 100,
-            product_data: {
-              name: item.product.name,
-              images: [item.product.images[0]],
+    if (user) {
+      let cart = await getCart();
+      if (cart && cart.items) {
+        const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] =
+          cart.items.map((item) => ({
+            price_data: {
+              currency: "usd",
+              unit_amount: item.product.NewPrice
+                ? item.product.NewPrice * 100
+                : item.product.price * 100,
+              product_data: {
+                name: item.product.name,
+                images: [item.product.images[0]],
+              },
             },
-          },
+            quantity: item.quantity,
+          }));
+        const cartItemsSimple = cart.items.map((item) => ({
+          id: item.product.id,
           quantity: item.quantity,
         }));
-      const cartItemsSimple = cart.items.map((item) => ({
-        id: item.product.id,
-        quantity: item.quantity,
-      }));
 
-      const session = await stripe.checkout.sessions.create({
-        mode: "payment",
-        line_items: lineItems,
-        // Specify the payment method type
-        billing_address_collection: "required",
+        const session = await stripe.checkout.sessions.create({
+          mode: "payment",
+          line_items: lineItems,
+          // Specify the payment method type
+          billing_address_collection: "required",
 
-        success_url:
-          process.env.NODE_ENV === "development"
-            ? `${process.env.KINDE_SITE_URL}/payment/success`
-            : `${process.env.DEPLOYMENT_URL}/payment/success`,
-        cancel_url:
-          process.env.NODE_ENV === "development"
-            ? `${process.env.KINDE_SITE_URL}/payment/cancel`
-            : `${process.env.DEPLOYMENT_URL}/payment/cancel`,
+          success_url:
+            process.env.NODE_ENV === "development"
+              ? `${process.env.KINDE_SITE_URL}/payment/success`
+              : `${process.env.DEPLOYMENT_URL}/payment/success`,
+          cancel_url:
+            process.env.NODE_ENV === "development"
+              ? `${process.env.KINDE_SITE_URL}/payment/cancel`
+              : `${process.env.DEPLOYMENT_URL}/payment/cancel`,
 
-        metadata: {
-          userId: user.id,
-          customer_email: user.email,
-          cartItems: JSON.stringify(cartItemsSimple),
-        },
-        phone_number_collection: {
-          enabled: true,
-        },
-        //customer_email: user.email,
-      });
+          metadata: {
+            userId: user.id,
+            customer_email: user.email,
+            cartItems: JSON.stringify(cartItemsSimple),
+          },
+          phone_number_collection: {
+            enabled: true,
+          },
+          //customer_email: user.email,
+        });
 
-      return redirect(session.url as string);
+        return redirect(session.url as string);
+      }
     }
   }
 }

@@ -81,8 +81,6 @@ export async function POST(req: Request) {
             userId: userId,
           },
         });
-      } else {
-        deleteGuestCartItem("4075c0c3-f8bc-4c2d-8517-3f70e7c4eaad");
       }
       break;
     }

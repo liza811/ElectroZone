@@ -20,6 +20,14 @@ export const productSchema = z.object({
   quantity: z.number().min(1),
 });
 
+export const deliverySchema = z.object({
+  name: z.string(),
+  email: z.string(),
+  City: z.string(),
+  Country: z.string(),
+  phone: z.string(),
+});
+
 export const bannerSchema = z.object({
   title: z.string(),
   imageString: z.string(),

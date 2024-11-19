@@ -106,7 +106,7 @@ export function ChceckoutButton() {
         </Button>
       ) : (
         <Button type="submit" size="lg" className="w-full mt-5">
-          Checkout
+          Continue
         </Button>
       )}
     </>
