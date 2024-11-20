@@ -49,7 +49,7 @@ export const Checkout = ({
         <h1 className="text-xl font-semibold tracking-tight">New Product</h1>
       </div>
 
-      <Card className="mt-5 md:my-6 w-[80%] mx-auto bg-transparent">
+      <Card className="mt-5 md:my-6 w-[90%] mx-auto bg-transparent">
         <CardHeader>
           <CardTitle>DELIVERY INFORMATIONS</CardTitle>
           <CardDescription>
@@ -133,7 +133,7 @@ export const Checkout = ({
           </div>
         </CardContent>
         <CardFooter>
-          <SubmitButton text="Create Product" />
+          <SubmitButton text="Order" />
         </CardFooter>
       </Card>
     </form>
