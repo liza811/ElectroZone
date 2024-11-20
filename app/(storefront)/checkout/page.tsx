@@ -1,6 +1,11 @@
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { Checkout } from "./checkout";
-import { getCart, getGuestCartt, getProductsFromGuestCart2 } from "@/lib/cart";
+import {
+  getCart,
+  getGuestCartt,
+  getMinimalCart,
+  getProductsFromGuestCart2,
+} from "@/lib/cart";
 
 const Delivery = async () => {
   const { getUser } = getKindeServerSession();
@@ -24,7 +29,20 @@ const Delivery = async () => {
       totalPrice += (productPrice || 0) * item.quantity;
     });
   } else {
-    cart = await getCart();
+    cart = await getMinimalCart();
+    cartWithQuantities = cart?.items.map((product) => {
+      const cartItem = cart.items.find(
+        (item) => item.productId === product.product.id
+      );
+      return {
+        ...product,
+        quantity: cartItem?.quantity || 1,
+      };
+    });
+    cartWithQuantities.forEach((item) => {
+      const productPrice = item.product.NewPrice || item.product.price;
+      totalPrice += (productPrice || 0) * item.quantity;
+    });
   }
 
   return (

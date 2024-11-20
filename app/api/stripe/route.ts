@@ -1,10 +1,9 @@
-import { clearCart } from "@/app/actions";
 import prisma from "@/app/lib/db";
+import { sendTwoFactorTokenEmail } from "@/app/lib/mail";
 
 import { stripe } from "@/app/lib/stripe";
-import { deleteGuestCartItem } from "@/lib/cart";
 
-import { cookies, headers } from "next/headers";
+import { headers } from "next/headers";
 
 export async function POST(req: Request) {
   const body = await req.text();
@@ -64,7 +63,9 @@ export async function POST(req: Request) {
           },
         },
       });
-
+      if (email) {
+        sendTwoFactorTokenEmail(email);
+      }
       for (const item of cartItemss) {
         await prisma.product.update({
           where: { id: item.id },
@@ -82,6 +83,7 @@ export async function POST(req: Request) {
           },
         });
       }
+
       break;
     }
     default: {

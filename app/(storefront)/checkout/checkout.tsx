@@ -42,8 +42,7 @@ export const Checkout = ({
     shouldValidate: "onBlur",
     shouldRevalidate: "onInput",
   });
-  console.log(total);
-  console.log(products);
+
   return (
     <form id={form.id} onSubmit={form.onSubmit} action={action}>
       <div className="flex items-center gap-4 md:p-6 ">
@@ -116,6 +115,19 @@ export const Checkout = ({
                 />
 
                 <p className="text-red-500">{fields.Country.errors}</p>
+              </div>
+              <div className="flex flex-col gap-3">
+                <Label>City</Label>
+                <Input
+                  type="text"
+                  key={fields.City.key}
+                  name={fields.City.name}
+                  defaultValue={fields.City.initialValue}
+                  className="w-full"
+                  placeholder="Country"
+                />
+
+                <p className="text-red-500">{fields.City.errors}</p>
               </div>
             </div>
           </div>

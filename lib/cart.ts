@@ -32,6 +32,36 @@ export const getCart = async () => {
   });
   return cart;
 };
+export const getMinimalCart = async () => {
+  const { getUser } = getKindeServerSession();
+  const user = await getUser();
+  if (!user) {
+    return null;
+  }
+  const cart = await prisma.cart.findUnique({
+    where: {
+      userId: user.id,
+    },
+    select: {
+      items: {
+        select: {
+          id: true,
+          quantity: true,
+          product: {
+            select: {
+              id: true,
+
+              price: true,
+
+              NewPrice: true,
+            },
+          },
+        },
+      },
+    },
+  });
+  return cart;
+};
 
 export const getWhisList = async () => {
   const { getUser } = getKindeServerSession();

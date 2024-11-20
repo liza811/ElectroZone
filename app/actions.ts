@@ -19,6 +19,7 @@ import {
   removeFromGuestWishlist,
   saveGuestCart,
 } from "@/lib/cart";
+import { sendTwoFactorTokenEmail } from "./lib/mail";
 
 export async function createProduct(prevState: unknown, formData: FormData) {
   const { getUser, getPermission } = getKindeServerSession();
@@ -60,19 +61,11 @@ export async function createProduct(prevState: unknown, formData: FormData) {
   redirect("/dashboard/products");
 }
 export async function addOrder(prevState: unknown, formData: FormData) {
-  console.log("Action triggered");
-  console.log("Form Data:", formData);
-  const { getUser, getPermission } = getKindeServerSession();
+  const { getUser } = getKindeServerSession();
   const user = await getUser();
-  const permission = await getPermission("dashboard");
+
   const total = formData.get("total") as string;
   const products = JSON.parse(formData.get("products") as string);
-  console.log("Total:", formData.get("total"));
-  console.log("Products:", formData.get("products"));
-  const isAdmin = permission?.isGranted ? true : false;
-  if (!user || !isAdmin) {
-    return redirect("/");
-  }
 
   const submission = parseWithZod(formData, {
     schema: deliverySchema,
@@ -82,22 +75,61 @@ export async function addOrder(prevState: unknown, formData: FormData) {
     return submission.reply();
   }
 
-  await prisma.order.create({
+  const order = await prisma.order.create({
     data: {
       amount: Number(total),
       guestName: submission.value.name,
 
-      billingAddressLine1: `${submission.value.Country} ${submission.value.City}`,
+      billingCity: submission.value.City,
+      billingCountry: submission.value.Country,
       guestEmail: submission.value.email,
+      userId: user?.id,
       orderItems: {
-        create: products.map((item: { id: String; quantity: number }) => ({
-          productId: item.id,
-          quantity: item.quantity,
-        })),
+        create: products.map(
+          (item: { product: { id: string }; quantity: number }) => ({
+            productId: item.product.id,
+            quantity: item.quantity,
+          })
+        ),
       },
     },
   });
-
+  if (order && user) {
+    await Promise.all(
+      products.map(
+        async (item: { product: { id: string }; quantity: number }) => {
+          await prisma.product.update({
+            where: { id: item.product.id },
+            data: {
+              quantity: {
+                decrement: item.quantity,
+              },
+            },
+          });
+        }
+      )
+    );
+    await prisma.cart.delete({
+      where: {
+        userId: user.id,
+      },
+    });
+  } else {
+    clearCart();
+    await Promise.all(
+      products.map(async (item: { id: string; quantity: number }) => {
+        await prisma.product.update({
+          where: { id: item.id },
+          data: {
+            quantity: {
+              decrement: item.quantity,
+            },
+          },
+        });
+      })
+    );
+  }
+  await sendTwoFactorTokenEmail(submission.value.email);
   redirect("/");
 }
 export async function editProduct(prevState: any, formData: FormData) {

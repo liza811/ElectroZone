@@ -7,8 +7,6 @@ import { unstable_noStore as noStore } from "next/cache";
 
 import { getCart, getGuestCart, getProductsFromGuestCart } from "@/lib/cart";
 import { CartItem, EmptyCart } from "@/app/components/storefront/cart-item";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
 
 export default async function BagRoute() {
   noStore();
@@ -24,7 +22,7 @@ export default async function BagRoute() {
       </div>;
     } else {
       let totalPrice = 0;
-      console.log(guestCart);
+
       const products = await getProductsFromGuestCart(guestCart);
       const cartWithQuantities = products?.map((product) => {
         const cartItem = guestCart.items.find(
@@ -140,6 +138,39 @@ export default async function BagRoute() {
             </div>
 
             <form action={checkOut}>
+              <div className="mt-6 flex justify-between w-full items-center">
+                <div className="flex items-center space-x-2 border border-gray-200  px-6 py-2 rounded-md ">
+                  <input
+                    type="radio"
+                    id="option-one"
+                    name="paymentOption"
+                    value="option-one"
+                    defaultChecked
+                    className=" cursor-pointer"
+                  />
+                  <label
+                    htmlFor="option-one"
+                    className="font-bold cursor-pointer"
+                  >
+                    Cash On Delivery
+                  </label>
+                </div>
+                <div className="flex items-center space-x-2 border border-gray-200 rounded-md px-6 py-2">
+                  <input
+                    type="radio"
+                    id="option-two"
+                    name="paymentOption"
+                    value="option-two"
+                    className=" cursor-pointer"
+                  />
+                  <label
+                    htmlFor="option-two"
+                    className="font-bold text-purple-900 text-base pointer"
+                  >
+                    Stripe
+                  </label>
+                </div>
+              </div>
               <ChceckoutButton />
             </form>
           </div>
