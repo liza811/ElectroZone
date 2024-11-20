@@ -74,26 +74,46 @@ export async function addOrder(prevState: unknown, formData: FormData) {
   if (submission.status !== "success") {
     return submission.reply();
   }
+  let order;
+  if (user) {
+    order = await prisma.order.create({
+      data: {
+        amount: Number(total),
+        guestName: submission.value.name,
 
-  const order = await prisma.order.create({
-    data: {
-      amount: Number(total),
-      guestName: submission.value.name,
-
-      billingCity: submission.value.City,
-      billingCountry: submission.value.Country,
-      guestEmail: submission.value.email,
-      userId: user?.id,
-      orderItems: {
-        create: products.map(
-          (item: { product: { id: string }; quantity: number }) => ({
-            productId: item.product.id,
-            quantity: item.quantity,
-          })
-        ),
+        billingCity: submission.value.City,
+        billingCountry: submission.value.Country,
+        guestEmail: submission.value.email,
+        userId: user?.id,
+        orderItems: {
+          create: products.map(
+            (item: { product: { id: string }; quantity: number }) => ({
+              productId: item.product.id,
+              quantity: item.quantity,
+            })
+          ),
+        },
       },
-    },
-  });
+    });
+  } else {
+    order = await prisma.order.create({
+      data: {
+        amount: Number(total),
+        guestName: submission.value.name,
+
+        billingCity: submission.value.City,
+        billingCountry: submission.value.Country,
+        guestEmail: submission.value.email,
+
+        orderItems: {
+          create: products.map((item: { id: string; quantity: number }) => ({
+            productId: item.id,
+            quantity: item.quantity,
+          })),
+        },
+      },
+    });
+  }
   if (order && user) {
     await Promise.all(
       products.map(
