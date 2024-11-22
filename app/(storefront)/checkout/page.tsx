@@ -1,7 +1,6 @@
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { Checkout } from "./checkout";
 import {
-  getCart,
   getGuestCartt,
   getMinimalCart,
   getProductsFromGuestCart2,

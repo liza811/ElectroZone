@@ -99,7 +99,7 @@ export async function getGuestCart(): Promise<GuestCart> {
 
   return guestCart;
 }
-type GuestWishlist = Array<{ productId: string }>;
+type GuestWishlist = { productId: string }[];
 export async function getGuestWishlist(): Promise<GuestWishlist> {
   const cookieStore = cookies();
   const wishlistCookie = cookieStore.get("likedItems");
@@ -145,21 +145,22 @@ export async function removeFromGuestWishlist(
   const cookieStore = cookies();
   const wishlistCookie = cookieStore.get("likedItems");
 
-  const guestWishlist: GuestWishlist[] = wishlistCookie
-    ? JSON.parse(decodeURIComponent(wishlistCookie.value))
-    : [];
+  let guestWishlist: GuestWishlist = [];
+  try {
+    guestWishlist = wishlistCookie ? JSON.parse(wishlistCookie.value) : [];
+  } catch (error) {
+    console.error("Failed to parse likedItems cookie:", error);
+    guestWishlist = [];
+  }
 
+  //@ts-ignore
   const updatedWishlist = guestWishlist.filter(
-    //@ts-ignore
     (item) => item.productId !== productId
   );
 
-  // Update the cookie with the modified wishlist
-  cookieStore.set(
-    "likedItems",
-    encodeURIComponent(JSON.stringify(updatedWishlist))
-  );
+  cookieStore.set("likedItems", JSON.stringify(updatedWishlist));
 }
+
 export function deleteGuestCartItem(productId: string) {
   const guestCart = getGuestCartt();
 

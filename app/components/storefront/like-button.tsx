@@ -15,8 +15,9 @@ export const LikeButton = ({ productId, isGuest, liked }: LikeButtonProps) => {
 
   useEffect(() => {
     if (isGuest) {
+      let likedItemsParsed = [];
       const likedItems = Cookies.get("likedItems");
-      const likedItemsParsed = likedItems ? JSON.parse(likedItems) : [];
+      likedItemsParsed = likedItems ? JSON.parse(likedItems) : [];
 
       setLiked(
         likedItemsParsed.some(
