@@ -89,7 +89,7 @@ export default async function BagRoute() {
                     htmlFor="option-two"
                     className="font-bold text-purple-900 text-base pointer"
                   >
-                    Stripe
+                    Pay On Ligne
                   </label>
                 </div>
               </div>
@@ -138,7 +138,7 @@ export default async function BagRoute() {
             </div>
 
             <form action={checkOut}>
-              <div className="mt-6 flex justify-between w-full items-center">
+              <div className="mt-6 flex justify-between gap-x-1 w-full items-center">
                 <div className="flex items-center space-x-2 border border-gray-200  px-6 py-2 rounded-md ">
                   <input
                     type="radio"
@@ -150,7 +150,7 @@ export default async function BagRoute() {
                   />
                   <label
                     htmlFor="option-one"
-                    className="font-bold cursor-pointer"
+                    className="font-bold cursor-pointer text-sm md:text-base"
                   >
                     Cash On Delivery
                   </label>
@@ -165,9 +165,9 @@ export default async function BagRoute() {
                   />
                   <label
                     htmlFor="option-two"
-                    className="font-bold text-purple-900 text-base pointer"
+                    className="font-bold text-purple-900 text-sm md:text-base pointer"
                   >
-                    Stripe
+                    Pay on Ligne
                   </label>
                 </div>
               </div>

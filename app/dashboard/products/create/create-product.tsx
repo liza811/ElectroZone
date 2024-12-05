@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import { ChevronLeft, XIcon } from "lucide-react";
+import { ChevronLeft, PlusCircleIcon, X, XIcon } from "lucide-react";
 import Link from "next/link";
 import { useFormState } from "react-dom";
 import { useForm } from "@conform-to/react";
@@ -38,6 +38,32 @@ import { CatgoriesT } from "./page";
 export default function ProductCreateRoute({ props }: { props: CatgoriesT }) {
   const [images, setImages] = useState<string[]>([]);
   const [lastResult, action] = useFormState(createProduct, undefined);
+  const [colors, setColors] = useState<string[]>([]);
+  const [sizes, setSizes] = useState<string[]>([]);
+  const [newColor, setNewColor] = useState("");
+  const [newSize, setNewSize] = useState("");
+
+  const addColor = () => {
+    if (newColor && !colors.includes(newColor)) {
+      setColors([...colors, newColor]);
+      setNewColor("");
+    }
+  };
+
+  const addSize = () => {
+    if (newSize && !sizes.includes(newSize)) {
+      setSizes([...sizes, newSize]);
+      setNewSize("");
+    }
+  };
+
+  const removeColor = (color: string) => {
+    setColors(colors.filter((c) => c !== color));
+  };
+
+  const removeSize = (size: string) => {
+    setSizes(sizes.filter((s) => s !== size));
+  };
   const [form, fields] = useForm({
     lastResult,
 
@@ -183,6 +209,88 @@ export default function ProductCreateRoute({ props }: { props: CatgoriesT }) {
                 <p className="text-red-500">{fields.category.errors}</p>
               </div>
             </div>
+            <div className="flex w-full justify-between gap-x-4 items-center">
+              <div className="w-full md:w-[80%] ">
+                <h2>Colors</h2>
+                <div className="flex gap-x-1">
+                  <Input
+                    type="text"
+                    value={newColor}
+                    onChange={(e) => setNewColor(e.target.value)}
+                    placeholder="Enter a color"
+                    className="w-[200px]"
+                  />
+                  <Button
+                    type="button"
+                    onClick={addColor}
+                    className="flex gap-x-1 px-5 focus:outline-none focus-visible:ring-0 ring-0"
+                  >
+                    <PlusCircleIcon size={18} />
+                    Add
+                  </Button>
+                </div>
+                <ul className="flex gap-1 flex-wrap max-w-[80%]">
+                  {colors.map((color) => (
+                    <li key={color} className="mt-6">
+                      <span
+                        className=" p-3.5 px-7 rounded-full mt-4 relative"
+                        style={{ backgroundColor: `#${color}` }}
+                      >
+                        {" "}
+                        <button
+                          type="button"
+                          onClick={() => removeColor(color)}
+                          title="remove"
+                          name="remove"
+                          className="absolute -top-1 -right-1 bg-red-500 p-1 rounded-full text-white"
+                        >
+                          <XIcon size={14} />
+                        </button>
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="w-full  md:w-[80%]">
+                <h2>Sizes</h2>
+                <div className="flex gap-x-1">
+                  <Input
+                    type="text"
+                    value={newSize}
+                    onChange={(e) => setNewSize(e.target.value)}
+                    placeholder="Enter a size"
+                    className="w-[200px]"
+                  />
+                  <Button
+                    type="button"
+                    onClick={addSize}
+                    className="flex gap-x-1 px-5 focus:outline-none focus-visible:ring-0 ring-0"
+                  >
+                    <PlusCircleIcon size={18} />
+                    Add
+                  </Button>
+                </div>
+                <ul className="flex gap-3 flex-wrap max-w-[80%]">
+                  {sizes.map((size) => (
+                    <li key={size} className="mt-6">
+                      <span className="rounded-md border px-4 py-0.5 mt-4 relative text-[19px]">
+                        {size}
+                        <button
+                          type="button"
+                          onClick={() => removeSize(size)}
+                          title="remove"
+                          name="remove"
+                          className="absolute -top-2 -right-2 bg-red-500 p-0.5 rounded-full text-white"
+                        >
+                          <XIcon size={14} />
+                        </button>
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+
             <div className="flex flex-col gap-3 ">
               <Label>Images</Label>
               <input

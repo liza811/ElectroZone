@@ -5,6 +5,7 @@ import {
   getMinimalCart,
   getProductsFromGuestCart2,
 } from "@/lib/cart";
+import { redirect } from "next/navigation";
 
 // Define types for cart and products
 interface Product {
@@ -57,15 +58,10 @@ const Delivery = async () => {
 
     cartWithQuantities =
       cart?.items.map((product) => {
-        //@ts-ignore
-        const cartItem = cart.items.find(
-          //@ts-ignore
-          (item) => item.productId === product.product.id
-        );
         return {
           //@ts-ignore
           ...product.product,
-          quantity: cartItem?.quantity || 1,
+          quantity: product?.quantity || 1,
         };
       }) || [];
     cartWithQuantities.forEach((item) => {
@@ -73,10 +69,12 @@ const Delivery = async () => {
       totalPrice += (productPrice || 0) * item.quantity;
     });
   }
-
+  if (!cartWithQuantities || !totalPrice) {
+    redirect("/");
+  }
   return (
     <Checkout
-      total={new Intl.NumberFormat("en-US").format(totalPrice)}
+      total={totalPrice}
       //@ts-ignore
       products={cartWithQuantities}
     />

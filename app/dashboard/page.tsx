@@ -25,6 +25,7 @@ async function getData() {
     select: {
       amount: true,
       createdAt: true,
+      cashOnDelivery: true,
     },
     orderBy: {
       createdAt: "asc",
@@ -33,7 +34,7 @@ async function getData() {
 
   const result = data.map((item) => ({
     date: new Intl.DateTimeFormat("en-US").format(item.createdAt),
-    revenue: item.amount / 100,
+    revenue: item.cashOnDelivery ? item.amount : item.amount / 100,
   }));
 
   return result;

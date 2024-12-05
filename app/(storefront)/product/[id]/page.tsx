@@ -1,14 +1,11 @@
-import { addItem } from "@/app/actions";
-import { ShoppingBagButton } from "@/app/components/SubmitButtons";
-
 import { ImageSlider } from "@/app/components/storefront/ImageSlider";
 import prisma from "@/app/lib/db";
 
 import { notFound } from "next/navigation";
 import { unstable_noStore as noStore } from "next/cache";
 import { RelatedProducts } from "@/app/components/storefront/related-products";
-import { BaggageClaim, InfoIcon } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { InfoIcon } from "lucide-react";
+
 import Image from "next/image";
 import QuantitySelector from "@/app/components/storefront/quantity-selector";
 
@@ -72,7 +69,7 @@ export default async function ProductIdRoute({
           <QuantitySelector
             productId={data.id}
             totalQuantity={data.quantity}
-            outOfStock={data.quantity === 0 ? true : false}
+            outOfStock={data.quantity <= 0 ? true : false}
           />
 
           <div className="w-full flex justify-center gap-x-2 mt-3">

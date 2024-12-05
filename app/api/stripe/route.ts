@@ -1,10 +1,14 @@
 import prisma from "@/app/lib/db";
 import { sendTwoFactorTokenEmail } from "@/app/lib/mail";
-
+import { v4 as uuidv4 } from "uuid";
 import { stripe } from "@/app/lib/stripe";
 
 import { headers } from "next/headers";
-
+const generateOrderNumber = () => {
+  const prefix = "Order_A";
+  const uniqueId = uuidv4().slice(0, 8);
+  return `${prefix}${uniqueId}`;
+};
 export async function POST(req: Request) {
   const body = await req.text();
 
@@ -34,13 +38,16 @@ export async function POST(req: Request) {
       }
 
       const userId = session.metadata?.userId || null;
+
       const email = session.customer_details?.email;
+
       const phone = session.customer_details?.phone;
       const customerName = session.customer_details?.name;
       const billingAddress = session.customer_details?.address;
 
       await prisma.order.create({
         data: {
+          orderNumber: generateOrderNumber(),
           amount: session.amount_total as number,
           status: session.status as string,
           userId: userId,

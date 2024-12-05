@@ -4,7 +4,8 @@ import { useState, useTransition } from "react";
 import { addItem, buyNow } from "@/app/actions";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { BaggageClaim, Loader2, ShoppingBag } from "lucide-react";
+import { Loader2, ShoppingBag } from "lucide-react";
+import { SelectOption } from "../dashboard/delete-banner";
 
 interface QuantitySelectorProps {
   productId: string;
@@ -19,7 +20,7 @@ export default function QuantitySelector({
 }: QuantitySelectorProps) {
   const [quantity, setQuantity] = useState(1);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
-  const [isBuyingNow, setIsBuyingNow] = useState(false);
+
   const [, startTransition] = useTransition();
 
   const disabledPlus = quantity === totalQuantity || totalQuantity == 0;
@@ -34,15 +35,6 @@ export default function QuantitySelector({
     startTransition(() => {
       addItem(productId, quantity).finally(() => {
         setIsAddingToCart(false);
-      });
-    });
-  };
-
-  const handleBuy = () => {
-    setIsBuyingNow(true);
-    startTransition(() => {
-      buyNow(productId, quantity).finally(() => {
-        setIsBuyingNow(false);
       });
     });
   };
@@ -68,10 +60,10 @@ export default function QuantitySelector({
           type="button"
           className={cn(
             "border-l border-slate-400 font-semibold text-[20px] px-6 h-full",
-            disabledPlus && "text-slate-500"
+            (disabledPlus || outOfStock) && "text-slate-500"
           )}
           onClick={() => handleQuantityChange(1)}
-          disabled={disabledPlus}
+          disabled={disabledPlus || outOfStock}
         >
           +
         </button>
@@ -95,22 +87,11 @@ export default function QuantitySelector({
         </Button>
       </div>
       <div className="w-full flex justify-center">
-        <Button
-          size="lg"
-          className="w-[80%] mt-5"
-          onClick={handleBuy}
-          disabled={isBuyingNow || outOfStock}
-        >
-          {isBuyingNow ? (
-            <>
-              <Loader2 className="mr-4 h-5 w-5 animate-spin" /> Buying...
-            </>
-          ) : (
-            <>
-              <BaggageClaim className="mr-4 h-5 w-5" /> Buy it Now
-            </>
-          )}
-        </Button>
+        <SelectOption
+          outOfStock={outOfStock}
+          productId={productId}
+          quantity={quantity}
+        />
       </div>
     </div>
   );

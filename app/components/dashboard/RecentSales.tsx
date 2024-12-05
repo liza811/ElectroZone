@@ -9,6 +9,7 @@ async function getData() {
       id: true,
       guestName: true,
       guestEmail: true,
+      cashOnDelivery: true,
       User: {
         select: {
           firstName: true,
@@ -55,7 +56,10 @@ export async function RecentSales() {
               </p>
             </div>
             <p className="ml-auto font-medium">
-              {new Intl.NumberFormat("en-US").format(item.amount / 100)} AED
+              {new Intl.NumberFormat("en-US").format(
+                item.cashOnDelivery ? item.amount : item.amount / 100
+              )}{" "}
+              AED
             </p>
           </div>
         ))}

@@ -23,6 +23,8 @@ async function getData() {
       createdAt: true,
       status: true,
       id: true,
+      cashOnDelivery: true,
+      orderNumber: true,
       guestEmail: true,
       guestName: true,
       guestPhone: true,
@@ -80,6 +82,7 @@ export default async function OrdersPage() {
                 <TableHead>Date</TableHead>
                 <TableHead>Address</TableHead>
                 <TableHead className="text-right">Amount</TableHead>
+                <TableHead className="text-right">Order Number</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -87,10 +90,13 @@ export default async function OrdersPage() {
                 <TableRow key={item.id}>
                   <TableCell>
                     <p className="font-medium">
-                      {item.guestName || item.User?.firstName}
+                      {item.guestName ||
+                        `${item.User?.firstName} ${item.User?.lastName}`}
                     </p>
-                    <p className="hidden md:flex text-sm text-muted-foreground">
-                      {item.guestPhone || item.guestEmail || item.User?.email}
+                    <p className="hidden md:flex text-sm text-muted-foreground max-w-36 text-wrap">
+                      {`${item.guestPhone ? item.guestPhone : ""}  ${
+                        item.guestEmail
+                      }` || item.User?.email}
                     </p>
                   </TableCell>
                   <TableCell>
@@ -153,8 +159,11 @@ export default async function OrdersPage() {
                       currency: "AED",
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
-                    }).format(item.amount / 100)}
+                    }).format(
+                      item.cashOnDelivery ? item.amount : item.amount / 100
+                    )}
                   </TableCell>
+                  <TableCell>{item.orderNumber}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

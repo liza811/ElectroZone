@@ -1,7 +1,7 @@
 "use server";
-
+import { v4 as uuidv4 } from "uuid";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { parseWithZod } from "@conform-to/zod";
 import { bannerSchema, deliverySchema, productSchema } from "./lib/zodSchemas";
 import prisma from "./lib/db";
@@ -10,7 +10,7 @@ import { revalidatePath } from "next/cache";
 import { stripe } from "./lib/stripe";
 import Stripe from "stripe";
 import { CartGuestItem, GuestCart } from "./lib/interfaces";
-import { cookies } from "next/headers";
+
 import {
   deleteGuestCartItem,
   getCart,
@@ -64,7 +64,7 @@ export async function addOrder(prevState: unknown, formData: FormData) {
   const { getUser } = getKindeServerSession();
   const user = await getUser();
 
-  const total = formData.get("total") as string;
+  const total = formData.get("total") as unknown as number;
   const products = JSON.parse(formData.get("products") as string);
 
   const submission = parseWithZod(formData, {
@@ -78,9 +78,10 @@ export async function addOrder(prevState: unknown, formData: FormData) {
 
   order = await prisma.order.create({
     data: {
+      orderNumber: generateOrderNumber(),
       amount: Number(total),
       guestName: submission.value.name,
-
+      cashOnDelivery: true,
       billingCity: submission.value.City,
       billingCountry: submission.value.Country,
       guestEmail: submission.value.email,
@@ -128,13 +129,80 @@ export async function addOrder(prevState: unknown, formData: FormData) {
     );
   }
   await sendTwoFactorTokenEmail(submission.value.email);
-  redirect("/");
+  redirect("/payment/success");
 }
-export async function editProduct(prevState: any, formData: FormData) {
+
+export async function deliveryOrder(prevState: unknown, formData: FormData) {
   const { getUser } = getKindeServerSession();
   const user = await getUser();
+  const productId = formData.get("productId") as string;
+  const quantity = Number(formData.get("quantity"));
 
-  if (!user || user.email !== "lizadjebara49@gmail.com") {
+  const submission = parseWithZod(formData, {
+    schema: deliverySchema,
+  });
+
+  if (submission.status !== "success") {
+    return submission.reply();
+  }
+  const product = await prisma.product.findUnique({
+    where: {
+      id: productId,
+    },
+    select: {
+      price: true,
+      NewPrice: true,
+      quantity: true,
+    },
+  });
+  if (!product || quantity > product.quantity) {
+    notFound();
+  }
+  let order;
+
+  order = await prisma.order.create({
+    data: {
+      orderNumber: generateOrderNumber(),
+      cashOnDelivery: true,
+      amount: product.NewPrice
+        ? quantity * product.NewPrice
+        : quantity * product.price,
+      guestName: submission.value.name,
+      userId: user?.id,
+      billingCity: submission.value.City,
+      billingCountry: submission.value.Country,
+      guestEmail: submission.value.email,
+
+      orderItems: {
+        create: {
+          productId: productId,
+          quantity: quantity,
+        },
+      },
+    },
+  });
+
+  if (order) {
+    await prisma.product.update({
+      where: { id: productId },
+      data: {
+        quantity: {
+          decrement: quantity,
+        },
+      },
+    });
+  }
+
+  await sendTwoFactorTokenEmail(submission.value.email);
+  redirect("/payment/success");
+}
+export async function editProduct(prevState: any, formData: FormData) {
+  const { getUser, getPermission } = getKindeServerSession();
+  const user = await getUser();
+  const permission = await getPermission("dashboard");
+
+  const isAdmin = permission?.isGranted ? true : false;
+  if (!user || !isAdmin) {
     return redirect("/");
   }
 
@@ -441,7 +509,7 @@ export async function addItem(productId: string, quantity: number) {
         },
       });
       revalidatePath("/");
-      revalidatePath("/", "layout");
+
       return { message: "Item added to cart.", newCartItem };
     }
   } catch (error) {
@@ -600,60 +668,72 @@ export async function checkOut(formData: FormData) {
   }
 }
 
-export async function buyNow(productId: string, quantity: number) {
-  const { getUser } = getKindeServerSession();
-  const user = await getUser();
+export async function buyNow(
+  productId: string,
+  quantity: number,
+  option: string
+) {
+  if (option === "option-one") {
+    return redirect(
+      `/order-now?productId=${encodeURIComponent(
+        productId
+      )}&quantity=${encodeURIComponent(quantity)}`
+    );
+  } else {
+    const { getUser } = getKindeServerSession();
+    const user = await getUser();
 
-  const product = await prisma.product.findUnique({
-    where: { id: productId },
-  });
-
-  if (product) {
-    const cartItemsSimple = {
-      id: product.id,
-      quantity: quantity,
-    };
-
-    const session = await stripe.checkout.sessions.create({
-      mode: "payment",
-      line_items: [
-        {
-          price_data: {
-            currency: "aed",
-            unit_amount: product.NewPrice
-              ? product.NewPrice * 100
-              : product.price * 100,
-            product_data: {
-              name: product.name,
-              images: [product.images[0]],
-            },
-          },
-          quantity: quantity,
-        },
-      ],
-      billing_address_collection: "required",
-
-      success_url:
-        process.env.NODE_ENV === "development"
-          ? `${process.env.KINDE_SITE_URL}/payment/success`
-          : `${process.env.DEPLOYMENT_URL}/payment/success`,
-      cancel_url:
-        process.env.NODE_ENV === "development"
-          ? `${process.env.KINDE_SITE_URL}/payment/cancel`
-          : `${process.env.DEPLOYMENT_URL}/payment/cancel`,
-
-      metadata: {
-        userId: user?.id || "",
-        customer_email: user?.email || "",
-        cartItems: JSON.stringify(cartItemsSimple),
-      },
-      phone_number_collection: {
-        enabled: true,
-      },
-      //customer_email: user.email,
+    const product = await prisma.product.findUnique({
+      where: { id: productId },
     });
 
-    return redirect(session.url as string);
+    if (product) {
+      const cartItemsSimple = {
+        id: product.id,
+        quantity: quantity,
+      };
+
+      const session = await stripe.checkout.sessions.create({
+        mode: "payment",
+        line_items: [
+          {
+            price_data: {
+              currency: "aed",
+              unit_amount: product.NewPrice
+                ? product.NewPrice * 100
+                : product.price * 100,
+              product_data: {
+                name: product.name,
+                images: [product.images[0]],
+              },
+            },
+            quantity: quantity,
+          },
+        ],
+        billing_address_collection: "required",
+
+        success_url:
+          process.env.NODE_ENV === "development"
+            ? `${process.env.KINDE_SITE_URL}/payment/success`
+            : `${process.env.DEPLOYMENT_URL}/payment/success`,
+        cancel_url:
+          process.env.NODE_ENV === "development"
+            ? `${process.env.KINDE_SITE_URL}/payment/cancel`
+            : `${process.env.DEPLOYMENT_URL}/payment/cancel`,
+
+        metadata: {
+          userId: user?.id || "",
+          customer_email: user?.email || "",
+          cartItems: JSON.stringify(cartItemsSimple),
+        },
+        phone_number_collection: {
+          enabled: true,
+        },
+        //customer_email: user.email,
+      });
+
+      return redirect(session.url as string);
+    }
   }
 }
 
@@ -764,3 +844,10 @@ export async function delWhisListItem(formData: FormData) {
   revalidatePath("/whishlist");
   return { message: "Item removed from whishlist." };
 }
+
+const generateOrderNumber = () => {
+  const prefix = "Order_A";
+  const uniqueId = uuidv4().slice(0, 8);
+  console.log(`${prefix}-${uniqueId}`);
+  return `${prefix}${uniqueId}`;
+};

@@ -19,6 +19,7 @@ async function getData() {
     prisma.order.findMany({
       select: {
         amount: true,
+        cashOnDelivery: true,
       },
     }),
   ]);
@@ -34,7 +35,12 @@ export async function DashboardStats() {
   const { products, user, order } = await getData();
 
   const totalAmount = order.reduce((accumalator, currentValue) => {
-    return accumalator + currentValue.amount;
+    return (
+      accumalator +
+      (currentValue.cashOnDelivery
+        ? currentValue.amount
+        : currentValue.amount / 100)
+    );
   }, 0);
   return (
     <div className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
@@ -47,7 +53,7 @@ export async function DashboardStats() {
         </CardHeader>
         <CardContent>
           <p className="text-2xl font-bold">
-            {new Intl.NumberFormat("en-US").format(totalAmount / 100)} AED
+            {new Intl.NumberFormat("en-US").format(totalAmount)} AED
           </p>
           <p className="text-xs text-muted-foreground">Based on 100 Charges</p>
         </CardContent>

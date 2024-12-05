@@ -1,5 +1,5 @@
 "use client";
-import { addOrder } from "@/app/actions";
+import { deliveryOrder } from "@/app/actions";
 
 import {
   Card,
@@ -19,19 +19,15 @@ import { deliverySchema } from "@/app/lib/zodSchemas";
 
 import { SubmitButton } from "@/app/components/SubmitButtons";
 
-export const Checkout = ({
-  total,
-  products,
+export const Order = ({
+  productId,
+  quantity,
 }: {
-  total: number;
-  products: {
-    id: string;
-    price: number;
-    NewPrice: number | null;
-    quantity: number;
-  }[];
+  productId: string;
+
+  quantity: number;
 }) => {
-  const [lastResult, action] = useFormState(addOrder, undefined);
+  const [lastResult, action] = useFormState(deliveryOrder, undefined);
   const [form, fields] = useForm({
     lastResult,
 
@@ -52,7 +48,6 @@ export const Checkout = ({
     >
       <div className="flex items-center gap-4 md:p-6 pt-4">
         <h1 className="text-xl font-semibold tracking-tight">
-          {" "}
           Make your Order
         </h1>
       </div>
@@ -66,13 +61,8 @@ export const Checkout = ({
         </CardHeader>
         <CardContent>
           <div className="flex flex-col gap-6">
-            <input type="hidden" name="total" value={total} />
-
-            <input
-              type="hidden"
-              name="products"
-              value={JSON.stringify(products)}
-            />
+            <input type="hidden" name="productId" value={productId} />
+            <input type="hidden" name="quantity" value={quantity} />
           </div>
           <div className="flex flex-col gap-3">
             <Label>Full Name</Label>
@@ -80,7 +70,6 @@ export const Checkout = ({
               type="text"
               key={fields.name.key}
               name={fields.name.name}
-              defaultValue={fields.name.initialValue}
               className="w-full"
               placeholder="Name"
             />
@@ -93,7 +82,6 @@ export const Checkout = ({
               type="email"
               key={fields.email.key}
               name={fields.email.name}
-              defaultValue={fields.email.initialValue}
               className="w-full"
               placeholder="Email "
             />
@@ -106,7 +94,6 @@ export const Checkout = ({
               type="number"
               key={fields.phone.key}
               name={fields.phone.name}
-              defaultValue={fields.phone.initialValue}
               className="w-full"
               placeholder="Phone number"
             />
@@ -118,7 +105,6 @@ export const Checkout = ({
                 type="text"
                 key={fields.Country.key}
                 name={fields.Country.name}
-                defaultValue={fields.Country.initialValue}
                 className="w-full"
                 placeholder="Country"
               />
@@ -131,7 +117,6 @@ export const Checkout = ({
                 type="text"
                 key={fields.City.key}
                 name={fields.City.name}
-                defaultValue={fields.City.initialValue}
                 className="w-full"
                 placeholder="Country"
               />

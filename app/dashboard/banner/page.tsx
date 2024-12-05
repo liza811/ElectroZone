@@ -13,8 +13,7 @@ import { EditIcon, PlusCircle } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { unstable_noStore as noStore } from "next/cache";
-
-import { DeleteBanner } from "@/app/components/dashboard/delete-banner";
+import { DeleteBanner } from "@/app/components/storefront/select-payment-option";
 
 async function getData() {
   const data = await prisma.banner.findMany({

@@ -10,12 +10,14 @@ export const ourFileRouter = {
   imageUploader: f({ image: { maxFileSize: "4MB", maxFileCount: 10 } })
     // Set permissions and file types for this FileRoute
     .middleware(async ({ req }) => {
-      const { getUser } = getKindeServerSession();
+      const { getUser, getPermission } = getKindeServerSession();
       const user = await getUser();
+      const permission = await getPermission("dashboard");
+
+      const isAdmin = permission?.isGranted ? true : false;
 
       // If you throw, the user will not be able to upload
-      if (!user || user.email !== "lizadjebara49@gmail.com")
-        throw new UploadThingError("Unauthorized");
+      if (!user || !isAdmin) throw new UploadThingError("Unauthorized");
 
       // Whatever is returned here is accessible in onUploadComplete as `metadata`
       return { userId: user.id };
@@ -33,12 +35,14 @@ export const ourFileRouter = {
   bannerImageRoute: f({ image: { maxFileSize: "4MB", maxFileCount: 1 } })
     // Set permissions and file types for this FileRoute
     .middleware(async ({ req }) => {
-      const { getUser } = getKindeServerSession();
+      const { getUser, getPermission } = getKindeServerSession();
       const user = await getUser();
+      const permission = await getPermission("dashboard");
+
+      const isAdmin = permission?.isGranted ? true : false;
 
       // If you throw, the user will not be able to upload
-      if (!user || user.email !== "lizadjebara49@gmail.com")
-        throw new UploadThingError("Unauthorized");
+      if (!user || isAdmin) throw new UploadThingError("Unauthorized");
 
       // Whatever is returned here is accessible in onUploadComplete as `metadata`
       return { userId: user.id };
