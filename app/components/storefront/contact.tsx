@@ -4,7 +4,6 @@ import { useEffect } from "react";
 
 export const ContactUs = () => {
   useEffect(() => {
-    // Select all input elements with the class 'input'
     const inputs = document.querySelectorAll(".input");
 
     // Define the focus function
