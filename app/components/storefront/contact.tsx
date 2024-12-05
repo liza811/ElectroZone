@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 import { useEffect } from "react";
 
 export const ContactUs = () => {
@@ -7,13 +8,15 @@ export const ContactUs = () => {
     const inputs = document.querySelectorAll(".input");
 
     // Define the focus function
-    const focusFunc = (event) => {
+    const focusFunc = (event: { target: { parentNode: any } }) => {
       const parent = event.target.parentNode;
       parent.classList.add("focus");
     };
 
     // Define the blur function
-    const blurFunc = (event) => {
+    const blurFunc = (event: {
+      target: { parentNode: any; value: string };
+    }) => {
       const parent = event.target.parentNode;
       if (event.target.value === "") {
         parent.classList.remove("focus");
@@ -39,10 +42,10 @@ export const ContactUs = () => {
     <main className="mt-5">
       <div className="container">
         <span className="big-circle"></span>
-        <img src="/img/shape.png" className="square" alt="" />
+        <Image src="/img/shape.png" className="square" alt="" />
         <div className="form">
           <div className="contact-info">
-            <h3 className="title">Let's get in touch</h3>
+            <h3 className="title">Let&apos;s get in touch</h3>
             <p className="text">
               We would be happy to answer any questions and assist you with your
               needs.
@@ -50,15 +53,15 @@ export const ContactUs = () => {
 
             <div className="info">
               <div className="information">
-                <img src="/img/location.png" className="icon" alt="" />
+                <Image src="/img/location.png" className="icon" alt="" />
                 <p>Business Bay Dubai, United Arab Emirates</p>
               </div>
               <div className="information">
-                <img src="/img/email.png" className="icon" alt="" />
+                <Image src="/img/email.png" className="icon" alt="" />
                 <p>info@awramart.ae</p>
               </div>
               <div className="information">
-                <img src="/img/phone.png" className="icon" alt="" />
+                <Image src="/img/phone.png" className="icon" alt="" />
                 <p>+971559968516</p>
               </div>
             </div>
