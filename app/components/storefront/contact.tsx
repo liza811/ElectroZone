@@ -4,38 +4,33 @@ import { useEffect } from "react";
 
 export const ContactUs = () => {
   useEffect(() => {
-    const inputs = document.querySelectorAll(".input");
+    const inputs = document.querySelectorAll<HTMLInputElement>(".input");
 
-    // Define the focus function
-    const focusFunc = (event: { target: { parentNode: any } }) => {
-      const parent = event.target.parentNode;
+    const focusFunc = (event: FocusEvent) => {
+      const parent = (event.target as HTMLElement).parentNode as HTMLElement;
       parent.classList.add("focus");
     };
 
-    // Define the blur function
-    const blurFunc = (event: {
-      target: { parentNode: any; value: string };
-    }) => {
-      const parent = event.target.parentNode;
-      if (event.target.value === "") {
+    const blurFunc = (event: FocusEvent) => {
+      const parent = (event.target as HTMLInputElement)
+        .parentNode as HTMLElement;
+      if ((event.target as HTMLInputElement).value === "") {
         parent.classList.remove("focus");
       }
     };
 
-    // Add event listeners to each input
     inputs.forEach((input) => {
       input.addEventListener("focus", focusFunc);
       input.addEventListener("blur", blurFunc);
     });
 
-    // Cleanup event listeners on component unmount
     return () => {
       inputs.forEach((input) => {
         input.removeEventListener("focus", focusFunc);
         input.removeEventListener("blur", blurFunc);
       });
     };
-  }, []); // Empty dependency array ensures this runs once after the component mounts
+  }, []);
 
   return (
     <main className="mt-5">
