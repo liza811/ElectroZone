@@ -36,11 +36,10 @@ export async function Hero() {
                   height={400}
                   className=" h-full w-full rounded-xl"
                 />
-                <div className="absolute top-6 left-6 bg-opacity-75 bg-black text-white p-2 md:p-4 rounded-lg shadow-lg transition-transform hover:scale-105">
-                  <h1 className="text-lg lg:text-2xl font-bold">
-                    {item.title}
-                  </h1>
-                </div>
+
+                <h1 className="text-lg lg:text-2xl font-bold text-center    absolute top-6 left-6 bg-opacity-75 bg-black text-white p-2 md:p-4 md:py-2 rounded-lg flex justify-center items-center shadow-lg transition-transform hover:scale-105">
+                  {item.title}
+                </h1>
               </div>
             </Link>
           </CarouselItem>

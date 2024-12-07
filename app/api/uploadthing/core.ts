@@ -42,7 +42,7 @@ export const ourFileRouter = {
       const isAdmin = permission?.isGranted ? true : false;
 
       // If you throw, the user will not be able to upload
-      if (!user || isAdmin) throw new UploadThingError("Unauthorized");
+      if (!user || !isAdmin) throw new UploadThingError("Unauthorized");
 
       // Whatever is returned here is accessible in onUploadComplete as `metadata`
       return { userId: user.id };

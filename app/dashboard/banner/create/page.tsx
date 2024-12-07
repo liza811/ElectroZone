@@ -90,8 +90,8 @@ export default function BannerRoute() {
                   onClientUploadComplete={(res) => {
                     setImages(res[0].url);
                   }}
-                  onUploadError={() => {
-                    alert("Something went wrong");
+                  onUploadError={(error) => {
+                    alert(error);
                   }}
                   endpoint="bannerImageRoute"
                 />
