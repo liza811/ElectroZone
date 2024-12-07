@@ -75,13 +75,17 @@ export async function addOrder(prevState: unknown, formData: FormData) {
     return submission.reply();
   }
   let order;
-
+  const orderNumber = generateOrderNumber();
   order = await prisma.order.create({
     data: {
-      orderNumber: generateOrderNumber(),
+      orderNumber: orderNumber,
       amount: Number(total),
       guestName: submission.value.name,
       cashOnDelivery: true,
+      billingAddressLine2: submission.value.addressComplement,
+      guestPhone: submission.value.phone,
+      billingAddressLine1: submission.value.streetAddress,
+      billingPostalCode: submission.value.postalCode,
       billingCity: submission.value.City,
       billingCountry: submission.value.Country,
       guestEmail: submission.value.email,
@@ -128,7 +132,14 @@ export async function addOrder(prevState: unknown, formData: FormData) {
       })
     );
   }
-  await sendTwoFactorTokenEmail(submission.value.email);
+  await sendTwoFactorTokenEmail(
+    submission.value.email,
+
+    orderNumber,
+    products,
+    total,
+    submission.value.name
+  );
   redirect("/payment/success");
 }
 
@@ -137,7 +148,7 @@ export async function deliveryOrder(prevState: unknown, formData: FormData) {
   const user = await getUser();
   const productId = formData.get("productId") as string;
   const quantity = Number(formData.get("quantity"));
-
+  const products = [{ id: productId, quantity: quantity }];
   const submission = parseWithZod(formData, {
     schema: deliverySchema,
   });
@@ -159,14 +170,17 @@ export async function deliveryOrder(prevState: unknown, formData: FormData) {
     notFound();
   }
   let order;
-
+  const orderNumber = generateOrderNumber();
+  const total = product.NewPrice
+    ? quantity * product.NewPrice
+    : quantity * product.price;
   order = await prisma.order.create({
     data: {
-      orderNumber: generateOrderNumber(),
+      orderNumber: orderNumber,
       cashOnDelivery: true,
-      amount: product.NewPrice
-        ? quantity * product.NewPrice
-        : quantity * product.price,
+      billingAddressLine2: submission.value.addressComplement,
+      amount: total,
+      billingAddressLine1: submission.value.streetAddress,
       guestName: submission.value.name,
       userId: user?.id,
       billingCity: submission.value.City,
@@ -193,7 +207,14 @@ export async function deliveryOrder(prevState: unknown, formData: FormData) {
     });
   }
 
-  await sendTwoFactorTokenEmail(submission.value.email);
+  await sendTwoFactorTokenEmail(
+    submission.value.email,
+
+    orderNumber,
+    products,
+    total,
+    submission.value.name
+  );
   redirect("/payment/success");
 }
 export async function editProduct(prevState: any, formData: FormData) {
@@ -848,6 +869,6 @@ export async function delWhisListItem(formData: FormData) {
 const generateOrderNumber = () => {
   const prefix = "Order_A";
   const uniqueId = uuidv4().slice(0, 8);
-  console.log(`${prefix}-${uniqueId}`);
+
   return `${prefix}${uniqueId}`;
 };

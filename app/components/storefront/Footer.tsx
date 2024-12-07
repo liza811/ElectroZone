@@ -1,11 +1,14 @@
-import { Facebook, Instagram, Linkedin, Twitter } from "lucide-react";
+import { footerCategories } from "@/lib/categories";
+import { Facebook, Music2, Youtube } from "lucide-react";
+
 import Link from "next/link";
 
-export function Footer() {
+export async function Footer() {
+  const cats = await footerCategories();
   return (
     <footer className="footer">
       <div className="container">
-        <div className="row">
+        <div className="flex justify-around">
           <div className="footer-col">
             <h4>Company</h4>
             <ul>
@@ -21,52 +24,54 @@ export function Footer() {
               <li>
                 <Link href="/Company/payment_policy">Payment Policy</Link>
               </li>
-            </ul>
-          </div>
-          <div className="footer-col">
-            <h4>Get Help</h4>
-            <ul>
               <li>
                 <Link href="/Company/FAQ">FAQ</Link>
               </li>
             </ul>
           </div>
+
           <div className="footer-col">
             <h4>Online Shop</h4>
             <ul>
-              <li>
-                <a href="#">Watch</a>
-              </li>
-              <li>
-                <a href="#">Bag</a>
-              </li>
-              <li>
-                <a href="#">Shoes</a>
-              </li>
-              <li>
-                <a href="#">Dress</a>
-              </li>
+              {cats.map((cat) => (
+                <li key={cat.id}>
+                  <Link href={`/category/${cat.id}`}>{cat.name}</Link>
+                </li>
+              ))}
             </ul>
           </div>
           <div className="footer-col">
             <h4>Contact Us</h4>
-            <Link href="/aCompany/contact_us" className="btn-contact">
+            <Link href="/contact_us" className="btn-contact">
               Contact Us
             </Link>
             <h4>Follow Us</h4>
             <div className="social-links">
-              <Link href="#" className="p-2.5 flex items-center justify-center">
+              <Link
+                href="https://www.facebook.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-2.5 flex items-center justify-center"
+              >
                 <Facebook size={20} />
               </Link>
-              <Link href="#" className="p-2.5 flex items-center justify-center">
-                <Twitter size={20} />
-              </Link>
-              <Link href="#" className="p-2.5 flex items-center justify-center">
-                <Instagram size={20} />
+
+              <Link
+                href="https://www.youtube.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-2.5 flex items-center justify-center"
+              >
+                <Youtube size={20} />
               </Link>
 
-              <Link href="#" className="p-2.5 flex items-center justify-center">
-                <Linkedin size={20} />
+              <Link
+                href="https://www.tiktok.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-2.5 flex items-center justify-center"
+              >
+                <Music2 size={20} />
               </Link>
             </div>
           </div>

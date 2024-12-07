@@ -31,7 +31,16 @@ export const fetchAllCategories = async () => {
   });
   return categories;
 };
-
+export const footerCategories = async () => {
+  const categories = await prisma.category.findMany({
+    select: {
+      id: true,
+      name: true,
+    },
+    take: 4,
+  });
+  return categories;
+};
 // export async function getProductsByCategory(categoryId: string) {
 //   const data = await prisma.product.findMany({
 //     where: {

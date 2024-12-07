@@ -4,7 +4,7 @@ import { useState, useTransition } from "react";
 import { addItem, buyNow } from "@/app/actions";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Loader2, ShoppingBag } from "lucide-react";
+import { BaggageClaim, Loader2, ShoppingBag } from "lucide-react";
 import { SelectOption } from "../dashboard/delete-banner";
 
 interface QuantitySelectorProps {
@@ -20,7 +20,7 @@ export default function QuantitySelector({
 }: QuantitySelectorProps) {
   const [quantity, setQuantity] = useState(1);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
-
+  const [isBuyingNow, setIsBuyingNow] = useState(false);
   const [, startTransition] = useTransition();
 
   const disabledPlus = quantity === totalQuantity || totalQuantity == 0;
@@ -29,7 +29,14 @@ export default function QuantitySelector({
   const handleQuantityChange = (delta: number) => {
     setQuantity((prevQuantity) => Math.max(1, prevQuantity + delta));
   };
-
+  const handleBuy = () => {
+    setIsBuyingNow(true);
+    startTransition(() => {
+      buyNow(productId, quantity, "option-one").finally(() => {
+        setIsBuyingNow(false);
+      });
+    });
+  };
   const handleAddToCart = () => {
     setIsAddingToCart(true);
     startTransition(() => {
@@ -87,11 +94,27 @@ export default function QuantitySelector({
         </Button>
       </div>
       <div className="w-full flex justify-center">
-        <SelectOption
+        <Button
+          className="w-[80%] mt-5"
+          onClick={handleBuy}
+          disabled={isBuyingNow || outOfStock}
+        >
+          {isBuyingNow ? (
+            <>
+              <Loader2 className="mr-4 h-5 w-5 animate-spin" /> Please wait...
+            </>
+          ) : (
+            <>
+              <BaggageClaim className="mr-4 h-5 w-5" />
+              Buy it Now
+            </>
+          )}
+        </Button>
+        {/* <SelectOption
           outOfStock={outOfStock}
           productId={productId}
           quantity={quantity}
-        />
+        /> */}
       </div>
     </div>
   );

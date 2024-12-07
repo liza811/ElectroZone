@@ -1,11 +1,12 @@
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
-import { Checkout } from "./checkout";
+
 import {
   getGuestCartt,
   getMinimalCart,
   getProductsFromGuestCart2,
 } from "@/lib/cart";
 import { redirect } from "next/navigation";
+import { Checkout } from "./checkout";
 
 // Define types for cart and products
 interface Product {

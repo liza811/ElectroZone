@@ -51,15 +51,15 @@ export function SelectOption({
           <BaggageClaim className="mr-4 h-5 w-5" /> Buy it Now
         </Button>
       </AlertDialogTrigger>
-      <AlertDialogContent className="w-[330px] md:max-w-lg">
+      <AlertDialogContent className="w-[330px] md:w-[500px] ">
         <AlertDialogHeader>
           <AlertDialogTitle>Choose thz right option for you.</AlertDialogTitle>
-          <AlertDialogDescription>
+          <AlertDialogDescription className="-mt-5">
             Do you want to Pay Now or At Delevery?
           </AlertDialogDescription>
-          <div className="mt-6 flex flex-col md:flex-row gap-y-2 justify-between w-full items-center">
+          <div className="mt-8 flex flex-col md:flex-row gap-y-2 justify-between w-full items-center">
             {/* Option One */}
-            <div className="flex items-center space-x-2 border border-gray-200 px-6 py-2 rounded-md">
+            <div className="flex items-center space-x-2 border border-gray-200 px-5 py-2 rounded-md">
               <input
                 type="radio"
                 id="option-one"

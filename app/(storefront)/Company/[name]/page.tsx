@@ -5,7 +5,6 @@ import { PrivacyPolicy } from "@/app/components/storefront/privacy-policy";
 import { ReturnPolicy } from "@/app/components/storefront/return-policy";
 import { PaymentPolicy } from "@/app/components/storefront/payment-policy";
 import { Faq } from "@/app/components/storefront/faq";
-import { ContactUs } from "@/app/components/storefront/contact";
 
 export default function Footerr({ params }: { params: { name: string } }) {
   if (!params.name) {
@@ -26,8 +25,6 @@ export default function Footerr({ params }: { params: { name: string } }) {
   if (params.name === "FAQ") {
     return <Faq />;
   }
-  if (params.name === "contact_us") {
-    return <ContactUs />;
-  }
+
   return notFound();
 }

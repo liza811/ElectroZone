@@ -1,8 +1,10 @@
 "use client";
 import Image from "next/image";
 import { useEffect } from "react";
+import "../contact.css";
+import { Facebook, Music2, Youtube } from "lucide-react";
 
-export const ContactUs = () => {
+const ContactUs = () => {
   useEffect(() => {
     const inputs = document.querySelectorAll<HTMLInputElement>(".input");
 
@@ -33,10 +35,16 @@ export const ContactUs = () => {
   }, []);
 
   return (
-    <main className="mt-5">
-      <div className="container">
+    <main className="mt-5 w-full">
+      <div className="container w-full">
         <span className="big-circle"></span>
-        <Image src="/img/shape.png" className="square" alt="" />
+        <Image
+          src="/shape.png"
+          className="square"
+          alt=""
+          width={50}
+          height={50}
+        />
         <div className="form">
           <div className="contact-info">
             <h3 className="title">Let&apos;s get in touch</h3>
@@ -45,35 +53,50 @@ export const ContactUs = () => {
               needs.
             </p>
 
-            <div className="info">
-              <div className="information">
-                <Image src="/img/location.png" className="icon" alt="" />
+            <div className="flex flex-col gap-y-2 w-full">
+              <div className="flex gap-x-2 items-start  ">
+                <Image src="/location.png" alt="" width={20} height={20} />
                 <p>Business Bay Dubai, United Arab Emirates</p>
               </div>
-              <div className="information">
-                <Image src="/img/email.png" className="icon" alt="" />
+              <div className="flex gap-x-2 ">
+                <Image src="/email.png" alt="" width={20} height={20} />
                 <p>info@awramart.ae</p>
               </div>
-              <div className="information">
-                <Image src="/img/phone.png" className="icon" alt="" />
+              <div className="flex gap-x-2 ">
+                <Image src="/phone.png" alt="" width={20} height={20} />
                 <p>+971559968516</p>
               </div>
             </div>
 
             <div className="social-media">
               <p>Connect with us :</p>
-              <div className="social-icons">
-                <a href="#" aria-label="Facebook">
-                  <i className="fab fa-facebook-f"></i>
+              <div className="social-icons ">
+                <a
+                  href="https://www.facebook.com/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Facebook "
+                  className="flex items-center justify-center text-center"
+                >
+                  <Facebook size={20} />
                 </a>
-                <a href="#" aria-label="Twitter">
-                  <i className="fab fa-twitter"></i>
+                <a
+                  href="https://www.youtube.com/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Youtube "
+                  className="flex items-center justify-center text-center"
+                >
+                  <Youtube size={20} />
                 </a>
-                <a href="#" aria-label="Instagram">
-                  <i className="fab fa-instagram"></i>
-                </a>
-                <a href="#" aria-label="LinkedIn">
-                  <i className="fab fa-linkedin-in"></i>
+                <a
+                  href="https://www.tiktok.com/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Tiktok "
+                  className="flex items-center justify-center text-center"
+                >
+                  <Music2 size={20} />
                 </a>
               </div>
             </div>
@@ -119,3 +142,4 @@ export const ContactUs = () => {
     </main>
   );
 };
+export default ContactUs;

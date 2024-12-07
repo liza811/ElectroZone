@@ -22,12 +22,18 @@ export function SubmitButton({ text, variant }: buttonProps) {
   return (
     <>
       {pending ? (
-        <Button disabled variant={variant}>
+        <Button
+          disabled
+          className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+        >
           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
           Please Wait
         </Button>
       ) : (
-        <Button variant={variant} type="submit">
+        <Button
+          className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          type="submit"
+        >
           {text}
         </Button>
       )}

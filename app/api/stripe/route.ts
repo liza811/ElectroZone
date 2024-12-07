@@ -44,10 +44,10 @@ export async function POST(req: Request) {
       const phone = session.customer_details?.phone;
       const customerName = session.customer_details?.name;
       const billingAddress = session.customer_details?.address;
-
+      const orderNumber = generateOrderNumber();
       await prisma.order.create({
         data: {
-          orderNumber: generateOrderNumber(),
+          orderNumber: orderNumber,
           amount: session.amount_total as number,
           status: session.status as string,
           userId: userId,
@@ -71,7 +71,13 @@ export async function POST(req: Request) {
         },
       });
       if (email) {
-        sendTwoFactorTokenEmail(email);
+        sendTwoFactorTokenEmail(
+          email,
+          orderNumber,
+          cartItemss,
+          session.amount_total || 0,
+          customerName || ""
+        );
       }
       for (const item of cartItemss) {
         await prisma.product.update({

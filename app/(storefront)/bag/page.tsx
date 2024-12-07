@@ -60,7 +60,7 @@ export default async function BagRoute() {
             </div>
 
             <form action={checkOut}>
-              <div className="mt-6 flex justify-between w-full items-center">
+              {/* <div className="mt-6 flex justify-between w-full items-center">
                 <div className="flex items-center space-x-2 border border-gray-200  px-6 py-2 rounded-md ">
                   <input
                     type="radio"
@@ -92,7 +92,15 @@ export default async function BagRoute() {
                     Pay On Ligne
                   </label>
                 </div>
-              </div>
+              </div> */}
+              <input
+                type="radio"
+                id="option-one"
+                name="paymentOption"
+                value="option-one"
+                defaultChecked
+                className=" cursor-pointer hidden"
+              />
               <ChceckoutButton />
             </form>
           </div>
@@ -138,7 +146,7 @@ export default async function BagRoute() {
             </div>
 
             <form action={checkOut}>
-              <div className="mt-6 flex justify-between gap-x-1 w-full items-center">
+              {/* <div className="mt-6 flex justify-between gap-x-1 w-full items-center">
                 <div className="flex items-center space-x-2 border border-gray-200  px-6 py-2 rounded-md ">
                   <input
                     type="radio"
@@ -170,7 +178,15 @@ export default async function BagRoute() {
                     Pay on Ligne
                   </label>
                 </div>
-              </div>
+              </div> */}
+              <input
+                type="radio"
+                id="option-one"
+                name="paymentOption"
+                value="option-one"
+                defaultChecked
+                className=" cursor-pointer hidden"
+              />
               <ChceckoutButton />
             </form>
           </div>

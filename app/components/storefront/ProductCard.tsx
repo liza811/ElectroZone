@@ -67,7 +67,7 @@ export function ProductCard({ item, isGuest }: iAppProps) {
               <h3 className="inline-flex items-center rounded-md bg-red-500/10 px-2 py-1 text-sm font-medium text-red-500 ring-1 ring-inset ring-red-500/10">
                 {item.NewPrice} AED
               </h3>
-              <p className="text-slate-600 text-sm line-through">
+              <p className="text-slate-600 text-sm line-through -mt-4">
                 {" "}
                 {item.price} AED
               </p>

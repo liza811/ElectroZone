@@ -26,6 +26,10 @@ export const deliverySchema = z.object({
   City: z.string(),
   Country: z.string(),
   phone: z.string(),
+  streetAddress: z.string(),
+
+  postalCode: z.string().optional(),
+  addressComplement: z.string().optional(),
 });
 
 export const bannerSchema = z.object({
