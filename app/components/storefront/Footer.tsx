@@ -8,44 +8,55 @@ export async function Footer() {
   return (
     <footer className="footer">
       <div className="container">
-        <div className="flex justify-around">
-          <div className="footer-col">
-            <h4>Company</h4>
+        <div className="flex flex-col lg:flex-row justify-around ">
+          <div className="a">
+            <h4 className="text-xl text-white font-semibold relative">
+              Company
+            </h4>
             <ul>
-              <li>
+              <li className="min-w-fit text-[#bbbbbb] mt-4 transition-all hover:mr-1">
                 <Link href="/Company/about-us">About Us</Link>
               </li>
-              <li>
+              <li className="min-w-fit text-[#bbbbbb] mt-4 transition-all hover:mr-1">
                 <Link href="/Company/privacy_policy">Privacy Policy</Link>
               </li>
-              <li>
+              <li className="min-w-fit text-[#bbbbbb] mt-4 transition-all hover:mr-1">
                 <Link href="/Company/return_policy">Return Policy</Link>
               </li>
-              <li>
+              <li className="min-w-fit text-[#bbbbbb] mt-4 transition-all hover:mr-1">
                 <Link href="/Company/payment_policy">Payment Policy</Link>
               </li>
-              <li>
+              <li className="min-w-fit text-[#bbbbbb] mt-4 transition-all hover:mr-1">
                 <Link href="/Company/FAQ">FAQ</Link>
               </li>
             </ul>
           </div>
 
-          <div className="footer-col">
-            <h4>Online Shop</h4>
+          <div className="a mt-4">
+            <h4 className="text-xl text-white font-semibold relative">
+              Online Shop
+            </h4>
             <ul>
               {cats.map((cat) => (
-                <li key={cat.id}>
+                <li
+                  key={cat.id}
+                  className="min-w-fit text-[#bbbbbb] mt-4 transition-all hover:mr-1"
+                >
                   <Link href={`/category/${cat.id}`}>{cat.name}</Link>
                 </li>
               ))}
             </ul>
           </div>
-          <div className="footer-col">
-            <h4>Contact Us</h4>
+          <div className="a mt-4">
+            <h4 className="text-xl text-white font-semibold relative">
+              Contact Us
+            </h4>
             <Link href="/contact_us" className="btn-contact">
               Contact Us
             </Link>
-            <h4>Follow Us</h4>
+            <h4 className="text-xl text-white font-semibold relative">
+              Follow Us
+            </h4>
             <div className="social-links">
               <Link
                 href="https://www.facebook.com/"
