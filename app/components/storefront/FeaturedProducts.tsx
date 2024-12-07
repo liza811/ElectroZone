@@ -54,12 +54,12 @@ export async function FeaturedProducts({
 }) {
   return (
     <>
-      <div className="flex items-center justify-between">
+      <div className="flex  justify-between">
         <h2 className="text-2xl font-extrabold tracking-tight">
           Featured Items
         </h2>
         <Link
-          className="text-sm font-semibold text-primary hover:text-primary/80"
+          className="text-sm font-semibold text-primary hover:text-primary/80 pt-2 "
           href="/products/all/featured"
         >
           See more &rarr;

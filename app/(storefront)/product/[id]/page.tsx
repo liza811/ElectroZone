@@ -72,7 +72,7 @@ export default async function ProductIdRoute({
             outOfStock={data.quantity <= 0 ? true : false}
           />
 
-          <div className="w-full flex justify-center gap-x-2 mt-3">
+          {/* <div className="w-full flex justify-center gap-x-2 mt-3">
             <Image
               alt="mastercard"
               src={"/mastercard.svg"}
@@ -101,7 +101,7 @@ export default async function ProductIdRoute({
               height={60}
               className="rounded-sm border object-cover"
             />
-          </div>
+          </div> */}
           <p className=" flex gap-x-2 mt-4 font-bold text-blue-950">
             <InfoIcon className="size-6 text-orange-500" />
             {data.quantity === 1

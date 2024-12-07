@@ -345,7 +345,7 @@ export const Checkout = ({
                     Place Order
                   </button> */}
                 </div>
-                <SubmitButton text="Order" />
+                <SubmitButton text="Order" variant={"black"} />
               </form>
             </div>
           </div>

@@ -29,7 +29,7 @@ export const CartItem = ({
 }: cartItemInterface) => {
   return (
     <>
-      <div className="w-24 h-24 sm:w-32 sm:h-32 relative border rounded-md">
+      <div className="w-24 h-24 sm:w-32 sm:h-32 relative border rounded-md ">
         <Image
           className="rounded-md object-cover"
           fill

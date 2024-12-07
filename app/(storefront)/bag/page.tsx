@@ -121,7 +121,7 @@ export default async function BagRoute() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto mt-10 min-h-[55vh]">
+    <div className="max-w-2xl mx-auto mt-10 min-h-[55vh] mb-3">
       {!cart || !cart.items || cart.items.length === 0 ? (
         <EmptyCart />
       ) : (
@@ -139,7 +139,7 @@ export default async function BagRoute() {
               />
             </div>
           ))}
-          <div className="m">
+          <div className="">
             <div className="flex items-center justify-between font-medium">
               <p>Subtotal:</p>
               <p>${new Intl.NumberFormat("en-US").format(totalPrice)}</p>

@@ -34,7 +34,7 @@ export async function Navbar() {
   }
   const total = cart?.items.length || 0;
   return (
-    <nav className="w-full h-[80px] top-0 z-50  fixed   py-5 flex items-center justify-between  shadow-lg  bg-[#e3e6f3] ">
+    <nav className="w-full h-[80px] top-0 z-50  fixed   py-5 flex items-center justify-between  shadow-lg  bg-white">
       <div className="flex items-center ">
         <Link
           href="/"

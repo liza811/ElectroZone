@@ -10,7 +10,7 @@ export default function StoreFrontLayout({
   return (
     <main className="flex flex-col w-full min-h-screen">
       <Navbar />
-      <main className=" px-4 sm:px-6 lg:px-8 bg-[#e3e6f3]/40 pt-[80px] h-full w-full flex-grow">
+      <main className=" px-4 sm:px-6 lg:px-8 bg-[#E0E0E0] pt-[80px] h-full w-full flex-grow">
         {children}
       </main>
       <Footer />

@@ -78,7 +78,7 @@ export default function QuantitySelector({
       <div className="w-full flex justify-center mt-3">
         <Button
           size="lg"
-          className="w-[80%] mt-5"
+          className="w-[80%] mt-5 bg-black hover:bg-black/80"
           onClick={handleAddToCart}
           disabled={isAddingToCart || outOfStock}
         >
@@ -95,7 +95,7 @@ export default function QuantitySelector({
       </div>
       <div className="w-full flex justify-center">
         <Button
-          className="w-[80%] mt-5"
+          className="w-[80%] mt-5 bg-black hover:bg-black/80"
           onClick={handleBuy}
           disabled={isBuyingNow || outOfStock}
         >

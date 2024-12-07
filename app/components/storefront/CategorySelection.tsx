@@ -15,17 +15,17 @@ export interface CategoriesSelectionI {
 export async function CategoriesSelection() {
   const categories = await fetchAllCategories();
   return (
-    <div className="py-24 sm:py-10">
-      <div className="flex justify-between items-center">
-        <h2 className=" text-xl md:text-2xl font-extrabold tracking-tight">
+    <div className="py-16 sm:py-10">
+      <div className="flex justify-between ">
+        <h2 className=" text-[18px] md:text-2xl font-extrabold tracking-tight ">
           Shop by Category
         </h2>
 
         <Link
-          className="text-sm font-semibold text-primary hover:text-primary/80"
+          className="text-sm font-semibold text-primary hover:text-primary/80 pt-2 "
           href="/products/all"
         >
-          Browse all Products &rarr;
+          Browse all &rarr;
         </Link>
       </div>
 

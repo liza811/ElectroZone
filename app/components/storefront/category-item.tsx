@@ -26,12 +26,12 @@ interface iAppProps {
 export const CategoryItem = ({ item, isGuest }: iAppProps) => {
   return (
     <section className="my-10">
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-extrabold tracking-tight">
+      <div className="flex  justify-between gap-x-2">
+        <h2 className="text-2xl font-extrabold tracking-tight text-wrap">
           {item.name} Products
         </h2>
         <Link
-          className="text-sm font-semibold text-primary hover:text-primary/80"
+          className="text-sm font-semibold text-primary hover:text-primary/80 pt-2 "
           href={`/category/${item.id}`}
         >
           See more &rarr;

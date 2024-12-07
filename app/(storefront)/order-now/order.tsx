@@ -343,7 +343,7 @@ export const Order = ({
                     Place Order
                   </button> */}
                 </div>
-                <SubmitButton text="Order Now" />
+                <SubmitButton text="Order Now" variant={"black"} />
               </form>
             </div>
           </div>

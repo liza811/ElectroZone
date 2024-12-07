@@ -17,7 +17,7 @@ import { SearchBar } from "./serach";
 export async function CategoriesNavigation() {
   const categories = await fetchAllCategories();
   return (
-    <section className="flex flex-row-reverse items-center md:ml-2 bg-gray-300 border rounded-md max-h-10 w-fit ">
+    <section className="flex flex-row-reverse items-center md:ml-2 bg-gray-100 border rounded-md max-h-10 w-fit ">
       <SearchBar />
       <DropdownMenu>
         <DropdownMenuTrigger asChild className="-pl-5 hidden md:flex">
