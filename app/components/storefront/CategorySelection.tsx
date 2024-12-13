@@ -36,12 +36,12 @@ export async function CategoriesSelection() {
             href={`/category/${cat.id}`}
             className="rounded-md cursor-pointer bg-white overflow-hidden border p-3 h-full"
           >
-            <div className="aspect-square min-h-[200px] rounded-md bg-gray-100 relative">
+            <div className="aspect-square min-h-[200px] rounded-md relative">
               <Image
                 src={cat.imageString}
                 alt={cat.name}
                 fill
-                className="object-cover rounded-sm"
+                className="object-contain rounded-sm"
               />
             </div>
 
