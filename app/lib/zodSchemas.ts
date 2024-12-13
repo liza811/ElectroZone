@@ -17,7 +17,7 @@ export const productSchema = z.object({
       message: "Price must be a number greater than or equal to 1",
     })
     .optional(),
-  quantity: z.number().min(1),
+  quantity: z.number().min(0),
 });
 
 export const deliverySchema = z.object({

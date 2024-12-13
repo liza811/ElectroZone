@@ -1,5 +1,6 @@
 import { footerCategories } from "@/lib/categories";
-import { Facebook, Music2, Youtube } from "lucide-react";
+import { Facebook, Instagram } from "lucide-react";
+import Image from "next/image";
 
 import Link from "next/link";
 
@@ -59,7 +60,7 @@ export async function Footer() {
             </h4>
             <div className="social-links">
               <Link
-                href="https://www.facebook.com/"
+                href="https://www.facebook.com/profile.php?id=61556902774041"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="p-2.5 flex items-center justify-center"
@@ -68,21 +69,12 @@ export async function Footer() {
               </Link>
 
               <Link
-                href="https://www.youtube.com/"
+                href="https://www.instagram.com/awramart?igsh=Z2RnYTFhdWFkeHVt"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="p-2.5 flex items-center justify-center"
               >
-                <Youtube size={20} />
-              </Link>
-
-              <Link
-                href="https://www.tiktok.com/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="p-2.5 flex items-center justify-center"
-              >
-                <Music2 size={20} />
+                <Instagram size={20} />
               </Link>
             </div>
           </div>
