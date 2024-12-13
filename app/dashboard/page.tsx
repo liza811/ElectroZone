@@ -10,6 +10,9 @@ import { RecentSales } from "../components/dashboard/RecentSales";
 import { Chart } from "../components/dashboard/Chart";
 import prisma from "../lib/db";
 import { unstable_noStore as noStore } from "next/cache";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { ChevronLeft } from "lucide-react";
 
 async function getData() {
   const now = new Date();
@@ -44,7 +47,12 @@ export default async function Dashboard() {
   noStore();
   const data = await getData();
   return (
-    <main className="my-10">
+    <main className="mb-10 mt-5">
+      <Button variant="outline" asChild className="mb-3 bg-black text-white">
+        <Link href="/" className="flex gap-x-2">
+          <ChevronLeft className="w-4 h-4" /> Home
+        </Link>
+      </Button>
       <DashboardStats />
 
       <div className="grid gap-4 md:gp-8 lg:grid-cols-2 xl:grid-cols-3 mt-10">
