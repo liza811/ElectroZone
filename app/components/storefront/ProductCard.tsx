@@ -36,12 +36,12 @@ export function ProductCard({ item, isGuest }: iAppProps) {
           <CarouselContent>
             {item.images.map((itemm, index) => (
               <CarouselItem key={index}>
-                <div className="aspect-square min-h-[200px] rounded-md bg-gray-100 relative">
+                <div className="aspect-square min-h-[200px] rounded-md bg-white relative">
                   <Image
                     src={itemm}
                     alt="Product Image"
                     fill
-                    className="object-cover rounded-sm"
+                    className="object-contain rounded-sm"
                   />
 
                   <div className="absolute top-2 right-2">
