@@ -37,17 +37,14 @@ export async function Navbar() {
     <nav className="w-full h-[80px] top-0 z-50  fixed   py-5 flex items-center justify-between  shadow-lg  bg-white">
       <div className="flex items-center ">
         <Link
-          href="/"
-          className="md:w-[180px] md:h-[180px] w-[120px] h-[120px] flex -ml-3"
-        >
-          <Image
-            src={"/logo.png"}
-            alt={"Logo"}
-            width={200}
-            height={200}
-            className="object-contain md:scale-[1.12] scale-[1.6]"
-          />
-        </Link>
+  href="/"
+  className="md:w-[180px] md:h-[180px] w-[120px] h-[120px] flex items-center justify-center -ml-3"
+>
+  <span className="text-3xl md:text-4xl font-extrabold bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600 bg-clip-text text-transparent tracking-wide drop-shadow-lg">
+    Electro<span className="text-white">Zone</span>
+  </span>
+</Link>
+
         <NavbarLinks />
         <CategoriesNavigation />
       </div>
