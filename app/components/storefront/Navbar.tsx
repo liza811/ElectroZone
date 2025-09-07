@@ -35,12 +35,12 @@ export async function Navbar() {
   const total = cart?.items.length || 0;
   return (
     <nav className="w-full h-[80px] top-0 z-50  fixed   py-5 flex items-center justify-between  shadow-lg  bg-white">
-      <div className="flex items-center ">
+      <div className="flex items-center gap-x-6 ">
         <Link
   href="/"
   className=" flex items-center justify-center "
 >
-  <span className="text-2xl  font-extrabold bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600 bg-clip-text text-transparent tracking-wide drop-shadow-lg">
+  <span className="text-2xl md:text-3xl  font-extrabold bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600 bg-clip-text text-transparent tracking-wide drop-shadow-lg pl-5">
     Electro<span className="text-black">Zone</span>
   </span>
 </Link>
