@@ -60,7 +60,7 @@ export async function Footer() {
             </h4>
             <div className="social-links">
               <Link
-                href="https://www.facebook.com/profile.php?id=61556902774041"
+                href="https://www.facebook.com"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="p-2.5 flex items-center justify-center"
@@ -69,7 +69,7 @@ export async function Footer() {
               </Link>
 
               <Link
-                href="https://www.instagram.com/awramart?igsh=Z2RnYTFhdWFkeHVt"
+                href="https://www.instagram.com"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="p-2.5 flex items-center justify-center"
