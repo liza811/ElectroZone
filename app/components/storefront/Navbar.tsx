@@ -40,8 +40,8 @@ export async function Navbar() {
   href="/"
   className="md:w-[180px] md:h-[180px] w-[120px] h-[120px] flex items-center justify-center -ml-3"
 >
-  <span className="text-3xl md:text-4xl font-extrabold bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600 bg-clip-text text-transparent tracking-wide drop-shadow-lg">
-    Electro<span className="text-white">Zone</span>
+  <span className="text-2xl md:text-3xl font-extrabold bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600 bg-clip-text text-transparent tracking-wide drop-shadow-lg">
+    Electro<span className="text-black">Zone</span>
   </span>
 </Link>
 
